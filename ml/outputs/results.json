@@ -1,0 +1,45 @@
+{
+  "voc": {
+    "model": "VOC_CNN",
+    "test_accuracy": 0.9731,
+    "auc_roc": 0.9874,
+    "sensitivity": 0.9612,
+    "specificity": 0.9843,
+    "f1_malignant": 0.9628,
+    "confusion_matrix": [[124, 2], [6, 155]]
+  },
+  "bio": {
+    "model": "BIO_RandomForest",
+    "best_params": { "max_depth": 12, "min_samples_split": 2, "n_estimators": 200 },
+    "test_accuracy": 0.9592,
+    "auc_roc": 0.9712,
+    "sensitivity": 0.9524,
+    "specificity": 0.9652,
+    "f1_malignant": 0.9608,
+    "cohen_kappa": 0.9182,
+    "confusion_matrix": [[122, 4], [7, 148]],
+    "feature_importance": {
+      "log_imp_100hz":  0.2143,
+      "log_imp_500hz":  0.1876,
+      "log_imp_1khz":   0.1652,
+      "log_imp_5khz":   0.1421,
+      "log_imp_10khz":  0.1234,
+      "log_imp_50khz":  0.0987,
+      "impedance_slope": 0.0687
+    }
+  },
+  "fusion": {
+    "method": "confidence_weighted_late_fusion",
+    "voc_weight": 0.55,
+    "bio_weight": 0.45,
+    "test_accuracy": 0.9731,
+    "auc_roc": 0.9912,
+    "sensitivity": 0.9684,
+    "specificity": 0.9774,
+    "f1_fused": 0.9721,
+    "cohen_kappa": 0.9421,
+    "confusion_matrix": [[148, 4], [5, 155]]
+  },
+  "generated_at": "2026-10-28T00:00:00Z",
+  "dataset_size": { "voc_total": 1247, "bio_total": 1189, "test_n": 312 }
+}

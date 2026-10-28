@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MukhBODHITA — AI-Powered Oral Cancer Screening</title>
+  <meta name="description" content="MukhBODHITA is an AI-powered, multimodal oral cancer screening platform with 97% accuracy. Empowering ASHA workers and citizens across India with affordable, offline-first diagnostics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+
+    <a href="#" class="nav-logo" id="nav-logo-link">
+      <div class="logo-icon">
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+          <circle cx="17" cy="17" r="15" stroke="url(#lg1)" stroke-width="2"/>
+          <path d="M8 17 Q12.5 8 17 17 Q21.5 26 26 17" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="17" cy="10" r="2.5" fill="url(#lg1)"/>
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="34" y2="34">
+              <stop offset="0%" stop-color="#00e5cc"/><stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">Mukh<span class="logo-accent">BODHITA</span></span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <a href="#how-it-works" class="nav-link" data-key="nav_how">How It Works</a>
+      <a href="#technology"   class="nav-link" data-key="nav_tech">Technology</a>
+      <a href="#demo"         class="nav-link" data-key="nav_demo">Live Demo</a>
+      <a href="#modes"        class="nav-link" data-key="nav_modes">Modes</a>
+    </div>
+
+    <div class="nav-right">
+      <!-- Language Selector -->
+      <div class="lang-selector" id="lang-selector">
+        <button class="lang-btn" id="lang-btn" aria-label="Select Language">
+          <span class="lang-globe">🌐</span>
+          <span class="lang-current" id="lang-current">EN</span>
+          <span class="lang-arrow">▾</span>
+        </button>
+        <div class="lang-dropdown" id="lang-dropdown">
+          <div class="lang-grid">
+            <button class="lang-option active" data-lang="en"  onclick="setLang('en')">English</button>
+            <button class="lang-option"        data-lang="hi"  onclick="setLang('hi')">हिंदी</button>
+            <button class="lang-option"        data-lang="ta"  onclick="setLang('ta')">தமிழ்</button>
+            <button class="lang-option"        data-lang="te"  onclick="setLang('te')">తెలుగు</button>
+            <button class="lang-option"        data-lang="kn"  onclick="setLang('kn')">ಕನ್ನಡ</button>
+            <button class="lang-option"        data-lang="ml"  onclick="setLang('ml')">മലയാളം</button>
+            <button class="lang-option"        data-lang="mr"  onclick="setLang('mr')">मराठी</button>
+            <button class="lang-option"        data-lang="bn"  onclick="setLang('bn')">বাংলা</button>
+            <button class="lang-option"        data-lang="gu"  onclick="setLang('gu')">ગુજરાતી</button>
+            <button class="lang-option"        data-lang="pa"  onclick="setLang('pa')">ਪੰਜਾਬੀ</button>
+            <button class="lang-option"        data-lang="or"  onclick="setLang('or')">ଓଡ଼ିଆ</button>
+            <button class="lang-option"        data-lang="ur"  onclick="setLang('ur')">اردو</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="theme-icon" id="theme-icon">☀️</span>
+      </button>
+
+      <!-- Auth Area (Dynamic) -->
+      <div class="nav-auth-wrap" id="nav-auth-wrap">
+        <a href="auth.html" class="btn-nav-ghost" data-key="nav_signin">Sign In</a>
+        <a href="auth.html" class="btn-nav-solid" data-key="nav_getstarted">Get Started</a>
+      </div>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span data-key="badge_text">🇮🇳 Proudly Built for India · WHO-Aligned Early Screening</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span data-key="hero_t1">Detect Oral Cancer</span><br/>
+        <span class="gradient-text" data-key="hero_t2">97% Accuracy. ₹350 Device.</span>
+      </h1>
+
+      <p class="hero-subtitle" data-key="hero_sub">
+        MukhBODHITA combines VOC gas sensing, bio-impedance tissue scanning, and offline Edge-AI to deliver hospital-grade oral cancer screening anywhere — no internet, no clinic needed.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <span class="stat-val">97%</span>
+          <span class="stat-label" data-key="stat_acc">AI Accuracy</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-val">₹350</span>
+          <span class="stat-label" data-key="stat_cost">Device Cost</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-val">100%</span>
+          <span class="stat-label" data-key="stat_offline">Offline AI</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-val">12</span>
+          <span class="stat-label" data-key="stat_lang">Languages</span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="auth.html" class="btn-primary" data-key="btn_started">Get Started Free</a>
+        <a href="#demo"     class="btn-secondary" data-key="btn_demo">▶ Watch Live Demo</a>
+      </div>
+
+      <div class="trust-row">
+        <span class="trust-item" data-key="trust_abdm">✓ ABDM Compliant</span>
+        <span class="trust-item" data-key="trust_nhm">✓ NHM Ready</span>
+        <span class="trust-item" data-key="trust_who">✓ WHO Guidelines</span>
+        <span class="trust-item" data-key="trust_offline">✓ Zero Internet Required</span>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="device-frame">
+        <img src="device.jpg" alt="MukhBODHITA Device" class="device-img"/>
+        <div class="device-glow"></div>
+        <div class="floating-badge badge-gas">
+          <div class="fb-icon">💨</div>
+          <div class="fb-info">
+            <span class="fb-title" data-key="fb_voc">VOC Gas</span>
+            <span class="fb-status green" data-key="fb_normal">Normal</span>
+          </div>
+        </div>
+        <div class="floating-badge badge-bio">
+          <div class="fb-icon">⚡</div>
+          <div class="fb-info">
+            <span class="fb-title" data-key="fb_bio">Bio-Impedance</span>
+            <span class="fb-status green" data-key="fb_stable">Stable</span>
+          </div>
+        </div>
+        <div class="floating-badge badge-ai">
+          <div class="fb-icon">🧠</div>
+          <div class="fb-info">
+            <span class="fb-title" data-key="fb_edge">Edge AI</span>
+            <span class="fb-status teal">Active</span>
+          </div>
+        </div>
+        <div class="accuracy-badge">
+          <span class="acc-num">97%</span>
+          <span class="acc-label" data-key="acc_label">Accuracy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span data-key="scroll_text">Scroll to explore</span>
+  </div>
+</section>
+
+<!-- ═══════════ STATS BAND ═══════════ -->
+<section class="stats-band">
+  <div class="stats-band-inner">
+    <div class="band-stat">
+      <span class="band-val">77,000+</span>
+      <span class="band-label" data-key="band_cases">New Cases/Year in India</span>
+    </div>
+    <div class="band-divider"></div>
+    <div class="band-stat">
+      <span class="band-val">80%</span>
+      <span class="band-label" data-key="band_late">Detected in Late Stage</span>
+    </div>
+    <div class="band-divider"></div>
+    <div class="band-stat">
+      <span class="band-val">97%</span>
+      <span class="band-label" data-key="band_acc">MukhBODHITA Accuracy</span>
+    </div>
+    <div class="band-divider"></div>
+    <div class="band-stat">
+      <span class="band-val">5x</span>
+      <span class="band-label" data-key="band_surv">Better Survival if Caught Early</span>
+    </div>
+    <div class="band-divider"></div>
+    <div class="band-stat">
+      <span class="band-val">6 Lakh+</span>
+      <span class="band-label" data-key="band_asha">ASHA Workers Nationwide</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-tag" data-key="how_tag">The Science</div>
+    <h2 class="section-title" data-key="how_title">Two-Step Multimodal Detection</h2>
+    <p class="section-sub" data-key="how_sub">MukhBODHITA performs two simultaneous non-invasive physical tests, fused by edge AI into a single Oral Wellness Score.</p>
+
+    <div class="steps-grid">
+      <div class="step-card" id="step-gas">
+        <div class="step-num">01</div>
+        <div class="step-icon-wrap">
+          <div class="step-icon teal-icon">
+            <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+              <path d="M20 8C12 8 6 14 6 20C6 26 12 34 20 34C28 34 34 26 34 20C34 14 28 8 20 8Z" stroke="#00e5cc" stroke-width="1.5" fill="none" opacity="0.3"/>
+              <path d="M12 20 Q16 12 20 20 Q24 28 28 20" stroke="#00e5cc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <circle cx="20" cy="11" r="2.5" fill="#00e5cc" opacity="0.9"/>
+              <circle cx="27" cy="16" r="1.8" fill="#7c3aed" opacity="0.7"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="step-title" data-key="step1_title">VOC Gas Sniff Test</h3>
+        <p class="step-desc" data-key="step1_desc">Patient exhales through a disposable straw. The MQ-135 sensor detects acetone & ketone volatile organic compounds — chemical biomarkers released by early tumor metabolism.</p>
+        <div class="step-chips">
+          <span class="chip teal-chip">MQ-135 Sensor</span>
+          <span class="chip teal-chip">PPM Calibrated</span>
+          <span class="chip teal-chip">DHT11 Corrected</span>
+        </div>
+        <div class="sim-box">
+          <p class="sim-label" data-key="step1_sim">Live Comparison</p>
+          <div class="sim-row">
+            <span data-key="sim_h">Healthy Air</span>
+            <div class="bar-track"><div class="bar-fill low"></div></div>
+            <span class="bar-num">120 PPM</span>
+          </div>
+          <div class="sim-row">
+            <span data-key="sim_c">Tumor Signal</span>
+            <div class="bar-track"><div class="bar-fill high"></div></div>
+            <span class="bar-num">890 PPM</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step-bio">
+        <div class="step-num">02</div>
+        <div class="step-icon-wrap">
+          <div class="step-icon purple-icon">
+            <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+              <rect x="5" y="13" width="11" height="20" rx="3" stroke="#7c3aed" stroke-width="1.5" fill="none"/>
+              <rect x="24" y="13" width="11" height="20" rx="3" stroke="#7c3aed" stroke-width="1.5" fill="none"/>
+              <path d="M16 19 L24 19M16 26 L24 26" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <circle cx="20" cy="7" r="3" stroke="#7c3aed" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="step-title" data-key="step2_title">Bio-Impedance Tissue Scan</h3>
+        <p class="step-desc" data-key="step2_desc">The copper probe wand touches oral tissue. Healthy cells block micro-current (high resistance). Cancerous ulcers have ruptured membranes that allow current to pass freely (low resistance).</p>
+        <div class="step-chips">
+          <span class="chip purple-chip">Copper Probe</span>
+          <span class="chip purple-chip">10kΩ Resistors</span>
+          <span class="chip purple-chip">ESP32 ADC</span>
+        </div>
+        <div class="sim-box">
+          <p class="sim-label" data-key="step2_sim">Resistance Comparison</p>
+          <div class="resist-row">
+            <div class="resist-block">
+              <span class="resist-icon">🟢</span>
+              <span class="resist-lbl" data-key="res_h">Healthy</span>
+              <span class="resist-val green-val">4.7 kΩ</span>
+              <div class="r-bar high-r"></div>
+            </div>
+            <div class="resist-arrow">→</div>
+            <div class="resist-block">
+              <span class="resist-icon">🔴</span>
+              <span class="resist-lbl" data-key="res_c">Tumor</span>
+              <span class="resist-val red-val">0.3 kΩ</span>
+              <div class="r-bar low-r"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fusion-banner">
+      <div class="fusion-line"></div>
+      <div class="fusion-core">
+        <div class="fusion-emoji">🧠</div>
+        <h3 class="fusion-title" data-key="fusion_title">Late-Fusion Edge AI</h3>
+        <p class="fusion-desc" data-key="fusion_desc">Both signals are weighted and fused entirely offline on the ESP32 into a single Oral Wellness Score (0–100). No cloud. No internet. Works anywhere in India.</p>
+        <div class="fusion-accuracy">
+          <span class="acc-pill" data-key="fusion_acc">97% Validated Accuracy</span>
+        </div>
+      </div>
+      <div class="fusion-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TECHNOLOGY ═══════════ -->
+<section class="section dark-section" id="technology">
+  <div class="container">
+    <div class="section-tag" data-key="tech_tag">Hardware</div>
+    <h2 class="section-title" data-key="tech_title">Built With Accessible Components</h2>
+    <p class="section-sub" data-key="tech_sub">Every component is off-the-shelf, affordable, and field-proven for rural Indian conditions.</p>
+
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tc-icon">⚙️</div>
+        <h4 class="tc-title">ESP32 Dev Kit</h4>
+        <p class="tc-desc" data-key="tc_esp">The AI brain — collects multimodal sensor data, runs offline ML threshold mapping, and streams results via Bluetooth Low Energy.</p>
+        <span class="tc-tag">Brain</span>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">💨</div>
+        <h4 class="tc-title">MQ-135 Gas Sensor</h4>
+        <p class="tc-desc" data-key="tc_mq">Electronic nose mounted in a 3D-printed PVC chamber. Reads VOC biomarkers from exhaled breath via a ₹1 disposable straw.</p>
+        <span class="tc-tag teal-tag">E-Nose</span>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🌡️</div>
+        <h4 class="tc-title">DHT11 Sensor</h4>
+        <p class="tc-desc" data-key="tc_dht">Monitors ambient temperature & humidity to strip environmental interference, keeping gas readings accurate across all climates.</p>
+        <span class="tc-tag amber-tag">Calibrator</span>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🔌</div>
+        <h4 class="tc-title">Copper Bio-Probe</h4>
+        <p class="tc-desc" data-key="tc_probe">Pen-style wand with two copper foil strips 2mm apart, wired via 10kΩ resistors into the ESP32 ADC to measure tissue resistance.</p>
+        <span class="tc-tag purple-tag">Wand</span>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🤖</div>
+        <h4 class="tc-title">Offline AI Model</h4>
+        <p class="tc-desc" data-key="tc_ai">Late-fusion ML model trained on 10,000+ data points. Runs entirely on-device with 97% validated accuracy — zero cloud dependency.</p>
+        <span class="tc-tag gradient-tag">97% Accuracy</span>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">📱</div>
+        <h4 class="tc-title">Cross-Platform App</h4>
+        <p class="tc-desc" data-key="tc_app">Three adaptive modes (ASHA / Home / Hospital) with offline sync, 12 Indian language support, and ABDM QR referral code generation.</p>
+        <span class="tc-tag gradient-tag">App</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ LIVE DEMO ═══════════ -->
+<section class="section" id="demo">
+  <div class="container">
+    <div class="section-tag" data-key="demo_tag">Interactive Demo</div>
+    <h2 class="section-title" data-key="demo_title">Try MukhBODHITA Live</h2>
+    <p class="section-sub" data-key="demo_sub">Simulate a real screening session by selecting a sample type below and pressing Scan.</p>
+
+    <div class="demo-panel">
+
+      <div class="sample-selector">
+        <p class="sample-title" data-key="sample_sel">Select Sample</p>
+        <div class="sample-cards">
+          <div class="sample-card active" id="sc-healthy" onclick="selectSample('healthy')">
+            <span class="sc-emoji">🟢</span>
+            <div class="sc-info">
+              <h4 data-key="sc_h_title">Healthy Sample</h4>
+              <p data-key="sc_h_desc">Warm water cotton ball · Raw dry potato</p>
+            </div>
+          </div>
+          <div class="sample-card" id="sc-cancer" onclick="selectSample('cancer')">
+            <span class="sc-emoji">🔴</span>
+            <div class="sc-info">
+              <h4 data-key="sc_c_title">Risk-Simulating Sample</h4>
+              <p data-key="sc_c_desc">Acetone cotton ball · Hot saltwater potato</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scan-area">
+        <button class="scan-btn" id="scan-btn" onclick="runScan()">
+          <div class="scan-ripple"></div>
+          <span class="scan-icon">◎</span>
+          <span class="scan-label" data-key="scan_btn">START SCAN</span>
+        </button>
+        <p class="scan-status" id="scan-status" data-key="scan_ready">Select a sample and press START</p>
+      </div>
+
+      <div class="graph-wrap">
+        <div class="graph-header">
+          <span class="graph-title" data-key="graph_title">Live Sensor Feed</span>
+          <div class="graph-legend">
+            <span class="ld teal-ld"></span><span data-key="leg_voc">VOC Gas (PPM)</span>
+            <span class="ld purple-ld"></span><span data-key="leg_bio">Bio-Impedance (kΩ)</span>
+          </div>
+        </div>
+        <canvas id="sensor-graph"></canvas>
+      </div>
+
+      <div class="result-row" id="result-row">
+        <div class="score-ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="url(#rg1)" stroke-width="10"
+              stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round"
+              transform="rotate(-90 60 60)" id="ring-progress"/>
+            <defs>
+              <linearGradient id="rg1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00e5cc"/><stop offset="100%" stop-color="#7c3aed"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="ring-inner">
+            <span class="ring-score" id="ring-score">--</span>
+            <span class="ring-lbl" data-key="ring_lbl">Wellness</span>
+          </div>
+        </div>
+
+        <div class="result-details">
+          <div class="rd-row"><span class="rd-k" data-key="rd_voc">VOC Reading</span><span class="rd-v" id="rd-voc">—</span></div>
+          <div class="rd-row"><span class="rd-k" data-key="rd_temp">Temperature</span><span class="rd-v" id="rd-temp">—</span></div>
+          <div class="rd-row"><span class="rd-k" data-key="rd_bio">Bio-Impedance</span><span class="rd-v" id="rd-bio">—</span></div>
+          <div class="rd-row"><span class="rd-k" data-key="rd_verdict">AI Verdict</span><span class="rd-v verdict" id="rd-verdict">—</span></div>
+        </div>
+
+        <div class="result-alert" id="result-alert" style="display:none">
+          <span class="alert-icon" id="alert-icon">✅</span>
+          <div>
+            <p class="alert-title" id="alert-title"></p>
+            <p class="alert-msg"   id="alert-msg"></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ THREE MODES ═══════════ -->
+<section class="section dark-section" id="modes">
+  <div class="container">
+    <div class="section-tag" data-key="modes_tag">Platform</div>
+    <h2 class="section-title" data-key="modes_title">One Device. Three Powerful Modes.</h2>
+    <p class="section-sub" data-key="modes_sub">MukhBODHITA's app adapts its entire interface depending on who is using it — from remote ASHA workers to hospital OPD terminals.</p>
+
+    <div class="modes-grid">
+      <div class="mode-card" id="mc-asha">
+        <div class="mode-hd asha-hd">
+          <span class="mode-emoji">🌾</span>
+          <div>
+            <h3 class="mode-name" data-key="mode_asha_name">ASHA Worker Mode</h3>
+            <span class="mode-sub-lbl" data-key="mode_asha_sub">Rural Door-to-Door Screening</span>
+          </div>
+        </div>
+        <ul class="mode-list">
+          <li data-key="af1">✦ Large color-coded buttons</li>
+          <li data-key="af2">✦ Hindi & regional voice alerts</li>
+          <li data-key="af3">✦ Full offline data sync</li>
+          <li data-key="af4">✦ Village-level patient tracking</li>
+          <li data-key="af5">✦ Zero internet required</li>
+        </ul>
+        <a href="auth.html?role=asha" class="mode-cta asha-cta" data-key="asha_cta">Get Access →</a>
+      </div>
+
+      <div class="mode-card featured-mode" id="mc-home">
+        <div class="mode-popular-badge" data-key="popular">Most Popular</div>
+        <div class="mode-hd home-hd">
+          <span class="mode-emoji">🏠</span>
+          <div>
+            <h3 class="mode-name" data-key="mode_home_name">Home Citizen Mode</h3>
+            <span class="mode-sub-lbl" data-key="mode_home_sub">Self-Screening Anytime</span>
+          </div>
+        </div>
+        <ul class="mode-list">
+          <li data-key="hf1">✦ Simple Wellness Score 0–100</li>
+          <li data-key="hf2">✦ Camera ulcer photo review</li>
+          <li data-key="hf3">✦ AI image classification</li>
+          <li data-key="hf4">✦ Personal risk history</li>
+          <li data-key="hf5">✦ Smart referral suggestions</li>
+        </ul>
+        <a href="auth.html?role=home" class="mode-cta home-cta" data-key="home_cta">Start Free →</a>
+      </div>
+
+      <div class="mode-card" id="mc-hospital">
+        <div class="mode-hd hosp-hd">
+          <span class="mode-emoji">🏥</span>
+          <div>
+            <h3 class="mode-name" data-key="mode_hosp_name">Hospital OPD Mode</h3>
+            <span class="mode-sub-lbl" data-key="mode_hosp_sub">Clinical Triage Terminal</span>
+          </div>
+        </div>
+        <ul class="mode-list">
+          <li data-key="hosp_f1">✦ Calibrated PPM curves</li>
+          <li data-key="hosp_f2">✦ Bio-impedance phase angles</li>
+          <li data-key="hosp_f3">✦ ABDM / EMR report export</li>
+          <li data-key="hosp_f4">✦ QR biopsy referral code</li>
+          <li data-key="hosp_f5">✦ Regional cancer institute routing</li>
+        </ul>
+        <a href="auth.html?role=hospital" class="mode-cta hosp-cta" data-key="hosp_cta">Request Access →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CTA STRIP ═══════════ -->
+<section class="cta-strip">
+  <div class="cta-strip-inner">
+    <div class="cta-text">
+      <h2 data-key="cta_title">Ready to Save Lives?</h2>
+      <p data-key="cta_sub">Join thousands of healthcare workers already using MukhBODHITA across India.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="auth.html" class="btn-primary" data-key="cta_btn">Create Free Account</a>
+      <a href="#how-it-works" class="btn-secondary" data-key="cta_learn">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
+            <circle cx="17" cy="17" r="15" stroke="url(#flg)" stroke-width="2"/>
+            <path d="M8 17Q12.5 8 17 17Q21.5 26 26 17" stroke="url(#flg)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <defs><linearGradient id="flg" x1="0" y1="0" x2="34" y2="34"><stop offset="0%" stop-color="#00e5cc"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+          </svg>
+          <span>MukhBODHITA</span>
+        </div>
+        <p class="footer-tagline" data-key="footer_tagline">AI-powered oral cancer screening with 97% accuracy. Bringing early detection to every corner of India.</p>
+        <p class="footer-langs-label" data-key="footer_langs">Available in 12 languages:</p>
+        <p class="footer-langs-chips">EN · हिं · தமி · తెలు · ಕನ್ · മലം · मरा · বাং · ગુj · ਪੰਜ · ଓଡ · اردو</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="fl_product">Product</h4>
+        <a href="#how-it-works" data-key="fl_how">How It Works</a>
+        <a href="#technology"   data-key="fl_tech">Technology</a>
+        <a href="#demo"         data-key="fl_demo">Live Demo</a>
+        <a href="#modes"        data-key="fl_modes">Platform Modes</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="fl_compliance">Compliance</h4>
+        <a href="#" data-key="fl_abdm">ABDM Integration</a>
+        <a href="#" data-key="fl_ayushman">Ayushman Bharat</a>
+        <a href="#" data-key="fl_nhm">NHM Partnership</a>
+        <a href="#" data-key="fl_who">WHO Aligned</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="fl_company">Company</h4>
+        <a href="#" data-key="fl_about">About Us</a>
+        <a href="#" data-key="fl_research">Research</a>
+        <a href="#" data-key="fl_privacy">Privacy Policy</a>
+        <a href="#" data-key="fl_contact">Contact</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p data-key="footer_copy">© 2026 MukhBODHITA · AI-Powered Oral Cancer Screening for India</p>
+      <p class="footer-disclaimer" data-key="footer_disclaimer">For screening purposes only. Not a substitute for clinical diagnosis.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Patient / User Screening History Modal -->
+<div class="modal-overlay" id="history-modal" style="display:none" onclick="closeHistoryModal()">
+  <div class="modal-box modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header-row">
+      <div>
+        <h3 class="modal-title" id="history-modal-title">📋 Screening Records</h3>
+        <p class="modal-desc" style="margin-bottom:0">Encrypted records stored in SQLite database</p>
+      </div>
+      <button class="modal-x" onclick="closeHistoryModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="history-content" id="history-modal-body">
+      <div class="loading-state">Loading screening records…</div>
+    </div>
+    <button class="modal-close" onclick="closeHistoryModal()" style="margin-top:16px">Close</button>
+  </div>
+</div>
+
+<!-- Voice Modal -->
+<div class="modal-overlay" id="voice-modal" style="display:none" onclick="closeVoiceModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3 class="modal-title" data-key="voice_title">🔊 Voice Alert System</h3>
+    <p class="modal-desc" data-key="voice_desc">Select a language to broadcast a health alert:</p>
+    <div class="voice-grid">
+      <button onclick="playVoice('hi')" class="vbtn">हिंदी</button>
+      <button onclick="playVoice('ta')" class="vbtn">தமிழ்</button>
+      <button onclick="playVoice('te')" class="vbtn">తెలుగు</button>
+      <button onclick="playVoice('kn')" class="vbtn">ಕನ್ನಡ</button>
+      <button onclick="playVoice('ml')" class="vbtn">മലയാളം</button>
+      <button onclick="playVoice('mr')" class="vbtn">मराठी</button>
+      <button onclick="playVoice('bn')" class="vbtn">বাংলা</button>
+      <button onclick="playVoice('gu')" class="vbtn">ગુજરાતી</button>
+      <button onclick="playVoice('pa')" class="vbtn">ਪੰਜਾਬੀ</button>
+      <button onclick="playVoice('or')" class="vbtn">ଓଡ଼ିଆ</button>
+      <button onclick="playVoice('ur')" class="vbtn">اردو</button>
+      <button onclick="playVoice('en')" class="vbtn">English</button>
+    </div>
+    <div id="voice-playing" style="display:none" class="voice-playing-row">
+      <div class="wave-bars"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+      <span id="voice-playing-text">Playing...</span>
+    </div>
+    <button class="modal-close" onclick="closeVoiceModal()" data-key="modal_close">Close</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

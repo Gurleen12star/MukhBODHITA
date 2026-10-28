@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MukhBODHITA — Clinical Screening Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* DASHBOARD SPECIFIC STYLES */
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dash-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .dash-nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .dash-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .dash-brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .dash-brand-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: rgba(0,229,204,0.12);
+      color: var(--teal);
+      border: 1px solid rgba(0,229,204,0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .device-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--green-c);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .device-pill:hover {
+      border-color: var(--teal);
+      transform: translateY(-1px);
+    }
+    .device-pill.disconnected {
+      background: rgba(245,158,11,0.08);
+      border-color: rgba(245,158,11,0.3);
+      color: var(--amber);
+    }
+    .device-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green-c);
+      animation: blink 1.5s infinite;
+    }
+    .device-pulse-dot.disconnected {
+      background: var(--amber);
+      animation: blink 0.8s infinite;
+    }
+
+    .dash-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.2s;
+    }
+    .nav-btn-link:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .btn-new-scan {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: var(--grad-primary);
+      color: #030712;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0,229,204,0.35);
+      transition: all 0.25s;
+    }
+    .btn-new-scan:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(0,229,204,0.5);
+    }
+
+    /* MAIN CONTAINER */
+    .dash-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* WELCOME BANNER */
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .dash-welcome h1 {
+      font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .dash-welcome p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* KPI STATS ROW */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--r-lg);
+      padding: 22px 24px;
+      transition: all 0.25s;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card:hover {
+      border-color: var(--teal);
+      transform: translateY(-3px);
+    }
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .kpi-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+    .kpi-icon {
+      font-size: 1.4rem;
+    }
+    .kpi-num {
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--text-primary);
+      font-family: var(--font-space);
+      margin-bottom: 4px;
+    }
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* RECORDS SECTION */
+    .records-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-card);
+    }
+    .records-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .records-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .records-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .records-badge {
+      padding: 3px 10px;
+      background: rgba(0,229,204,0.1);
+      border: 1px solid rgba(0,229,204,0.25);
+      border-radius: 99px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--teal);
+    }
+
+    .records-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      position: relative;
+    }
+    .search-input {
+      padding: 8px 14px 8px 34px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border-dim);
+      border-radius: 99px;
+      color: var(--text-primary);
+      font-size: 0.84rem;
+      outline: none;
+      min-width: 240px;
+      transition: all 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--teal);
+      background: var(--bg-card);
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .filter-btn {
+      padding: 7px 14px;
+      border: 1px solid var(--border-dim);
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .filter-btn.active {
+      background: var(--teal-glow);
+      color: var(--teal);
+      border-color: var(--teal);
+      font-weight: 700;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 64px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .empty-icon-wrap {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: rgba(0,229,204,0.08);
+      border: 1.5px dashed var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .empty-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .empty-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    /* RECORDS TABLE */
+    .table-container {
+      overflow-x: auto;
+    }
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .dash-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      border-bottom: 1.5px solid var(--border);
+      background: var(--bg-card2);
+    }
+    .dash-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-dim);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    .dash-table tr:hover td {
+      background: rgba(0,229,204,0.03);
+    }
+    .table-sample-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+    .table-score-ring {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 0.88rem;
+      font-family: var(--font-space);
+    }
+    .table-score-ring.healthy {
+      background: rgba(34,197,94,0.12);
+      color: var(--green-c);
+      border: 1.5px solid rgba(34,197,94,0.3);
+    }
+    .table-score-ring.cancer {
+      background: rgba(239,68,68,0.12);
+      color: var(--red-c);
+      border: 1.5px solid rgba(239,68,68,0.3);
+    }
+
+    .table-verdict-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .table-verdict-pill.healthy {
+      background: rgba(34,197,94,0.12);
+      color: var(--green-c);
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+    .table-verdict-pill.cancer {
+      background: rgba(239,68,68,0.12);
+      color: var(--red-c);
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+
+    .table-action-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .table-action-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+    .table-action-btn.del:hover {
+      border-color: var(--red-c);
+      color: var(--red-c);
+    }
+
+    /* NEW SCAN MODAL */
+    .scan-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(14px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .scan-modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 36px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+      animation: modalIn 0.3s ease;
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-head h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .close-x {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border-dim);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .close-x:hover { border-color: var(--teal); color: var(--teal); }
+
+    .scan-step-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .scan-patient-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .scan-field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .scan-field input, .scan-field select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      background: var(--bg-card2);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .scan-field input:focus, .scan-field select:focus {
+      border-color: var(--teal);
+    }
+
+    .scan-sample-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .scan-sample-card {
+      border: 2px solid var(--border-dim);
+      border-radius: 12px;
+      padding: 14px;
+      background: var(--bg-card2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+    .scan-sample-card:hover { border-color: var(--teal); }
+    .scan-sample-card.active { border-color: var(--teal); background: rgba(0,229,204,0.06); }
+    .scan-sample-card.active-cancer { border-color: var(--red-c); background: rgba(239,68,68,0.06); }
+    .scan-sample-icon { font-size: 1.8rem; }
+    .scan-sample-info h5 { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+    .scan-sample-info p { font-size: 0.72rem; color: var(--text-muted); }
+
+    .scan-live-box {
+      background: var(--bg-card2);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .scan-live-canvas {
+      width: 100%;
+      height: 120px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .scan-meters-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: center;
+    }
+    .meter-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .meter-val { font-size: 1.15rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-space); }
+    .meter-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+
+    .scan-progress-bar {
+      height: 6px;
+      background: var(--border-dim);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .scan-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--grad-primary);
+      transition: width 0.1s linear;
+    }
+    .scan-status-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--teal);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    /* RESULT CARD IN MODAL */
+    .scan-result-card {
+      border: 1.5px solid var(--teal);
+      background: rgba(0,229,204,0.06);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 24px;
+      display: none;
+      align-items: center;
+      gap: 18px;
+    }
+    .scan-result-card.cancer {
+      border-color: var(--red-c);
+      background: rgba(239,68,68,0.06);
+    }
+    .result-score-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--grad-primary);
+      color: #030712;
+      flex-shrink: 0;
+    }
+    .result-score-num { font-size: 1.3rem; font-weight: 900; line-height: 1; font-family: var(--font-space); }
+    .result-score-lbl { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+
+    /* REPORT SLIP MODAL */
+    .slip-box {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      background: var(--bg-card2);
+      font-family: var(--font-space), monospace;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+    .slip-header {
+      text-align: center;
+      border-bottom: 1.5px dashed var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+    }
+    .slip-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 992px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .dash-header { flex-direction: column; align-items: flex-start; }
+      .device-pill { display: none; }
+      /* BLE PAIRING MODAL STYLES */
+    .ble-modal-box {
+      max-width: 580px;
+    }
+    .ble-instruction-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .ble-step-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--bg-card2);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      transition: all 0.2s;
+    }
+    .ble-step-item:hover {
+      border-color: var(--teal);
+    }
+    .ble-step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0,229,204,0.12);
+      color: var(--teal);
+      border: 1.5px solid var(--teal);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-space);
+    }
+    .ble-step-info {
+      flex: 1;
+    }
+    .ble-step-info h5 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .ble-step-info p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .ble-step-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .btn-ble-refresh {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      background: var(--grad-primary);
+      color: #030712;
+      border: none;
+      border-radius: 99px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0,229,204,0.3);
+      transition: all 0.25s;
+    }
+    .btn-ble-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,229,204,0.45);
+    }
+    .spin-icon {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Radar Scanning Animation */
+    .ble-radar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 20px 16px;
+    }
+    .radar-circle {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,229,204,0.3);
+      background: radial-gradient(circle, rgba(0,229,204,0.12) 0%, transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .radar-circle::before {
+      content: '';
+      position: absolute;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0,229,204,0.4);
+    }
+    .radar-sweep {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, rgba(0,229,204,0.45) 0deg, transparent 60deg, transparent 360deg);
+      animation: radarRotate 1.6s linear infinite;
+    }
+    @keyframes radarRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    /* Discovered Device Card */
+    .ble-device-list {
+      margin-top: 20px;
+      animation: fadeUp 0.3s ease;
+    }
+    .ble-list-title {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    .discovered-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--bg-card2);
+      border: 2px solid var(--teal);
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,229,204,0.15);
+      transition: all 0.25s;
+    }
+    .discovered-card:hover {
+      background: rgba(0,229,204,0.06);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,229,204,0.3);
+    }
+    .discovered-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ble-device-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(0,229,204,0.12);
+      border: 1px solid rgba(0,229,204,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--teal);
+    }
+    .discovered-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .discovered-sn {
+      font-size: 0.82rem;
+      color: var(--teal);
+      font-family: var(--font-space);
+      margin: 1px 0;
+    }
+    .discovered-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .discovered-pair-btn {
+      padding: 8px 16px;
+      background: var(--grad-primary);
+      color: #030712;
+      border: none;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Connecting stage */
+    .ble-center-stage {
+      text-align: center;
+      padding: 30px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .ble-connecting-spinner-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+    .ble-pulse-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--teal);
+      animation: blePulseRing 2s ease-out infinite;
+    }
+    .ble-pulse-ring.r2 {
+      animation-delay: 0.6s;
+    }
+    @keyframes blePulseRing {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+    .ble-connecting-core {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--teal-glow);
+      border: 2px solid var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .ble-stage-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .ble-stage-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+    .ble-progress-track {
+      width: 240px;
+      height: 6px;
+      background: var(--border-dim);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .ble-progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--grad-primary);
+      transition: width 0.15s ease;
+    }
+
+    /* Success Stage */
+    .ble-success-badge {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.12);
+      border: 2px solid var(--green-c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .check-svg {
+      width: 48px;
+      height: 48px;
+      stroke: var(--green-c);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .check-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      animation: strokeCircle 0.6s ease forwards;
+    }
+    .check-check {
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: strokeCheck 0.4s 0.3s ease forwards;
+    }
+    @keyframes strokeCircle { to { stroke-dashoffset: 0; } }
+    @keyframes strokeCheck { to { stroke-dashoffset: 0; } }
+    @keyframes popIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .ble-specs-row {
+      display: flex;
+      gap: 16px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--bg-card2);
+      padding: 8px 18px;
+      border-radius: 99px;
+      border: 1px solid var(--border-dim);
+    }
+  </style>
+</head>
+<body>
+
+<!-- DASHBOARD TOP NAV -->
+<nav class="dash-nav">
+  <div class="dash-nav-inner">
+    <div style="display:flex; align-items:center; gap:16px;">
+      <a href="index.html" class="dash-brand">
+        <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
+          <circle cx="17" cy="17" r="15" stroke="url(#dlg)" stroke-width="2"/>
+          <path d="M8 17 Q12.5 8 17 17 Q21.5 26 26 17" stroke="url(#dlg)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="17" cy="10" r="2.5" fill="url(#dlg)"/>
+          <defs><linearGradient id="dlg" x1="0" y1="0" x2="34" y2="34"><stop offset="0%" stop-color="#00e5cc"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+        </svg>
+        <span class="dash-brand-title">Mukh<span style="background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">BODHITA</span></span>
+      </a>
+      <span class="dash-brand-tag">Clinical Hub</span>
+      <div class="device-pill disconnected" id="nav-device-pill" onclick="openBleModal()" style="cursor:pointer;" title="Click to Connect Bluetooth Device">
+        <span class="device-pulse-dot disconnected" id="nav-device-dot"></span>
+        <span id="nav-device-text">📡 Disconnected · Tap to Connect</span>
+      </div>
+    </div>
+
+    <div class="dash-nav-right">
+      <button class="btn-new-scan" onclick="handleNewScanClick()">
+        <span>+</span> <span>New Scan</span>
+      </button>
+
+      <!-- Theme Toggle -->
+      <button class="theme-toggle" id="dash-theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="dash-theme-icon">☀️</span>
+      </button>
+
+      <!-- Landing Page Link -->
+      <a href="index.html" class="nav-btn-link" title="Return to Landing Page">
+        <span>← Landing Page</span>
+      </a>
+
+      <!-- User Chip -->
+      <div class="user-badge-pill" id="dash-user-badge">
+        <span id="nav-user-name">👤 Loading…</span>
+        <span class="user-badge-role" id="nav-user-role">ASHA</span>
+      </div>
+
+      <!-- Logout -->
+      <button class="btn-nav-logout" onclick="dashLogout()" title="Sign Out">
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN DASHBOARD CONTENT -->
+<main class="dash-container">
+
+  <!-- HEADER GREETING & ACTIONS -->
+  <div class="dash-header">
+    <div class="dash-welcome">
+      <h1 id="welcome-heading">Welcome back, <span id="welcome-name" style="background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Caregiver</span> 👋</h1>
+      <p id="welcome-sub">Rural Oral Oncology Screening Hub · SQLite Encrypted Medical Registry</p>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="nav-btn-link" onclick="loadScreenings()" style="cursor:pointer;" title="Refresh screening records from database">
+        <span>🔄 Refresh</span>
+      </button>
+      <button class="btn-new-scan" onclick="handleNewScanClick()">
+        <span>+ Start New Scan</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI SUMMARY CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-label">Total Screenings</span>
+        <span class="kpi-icon">📋</span>
+      </div>
+      <div class="kpi-num" id="kpi-total">0</div>
+      <div class="kpi-sub">Encrypted in SQLite registry</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-label">Low Risk (Healthy)</span>
+        <span class="kpi-icon">🟢</span>
+      </div>
+      <div class="kpi-num" style="color:var(--green-c);" id="kpi-healthy">0</div>
+      <div class="kpi-sub" id="kpi-healthy-rate">0% of total screenings</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-label">High Risk Referrals</span>
+        <span class="kpi-icon">🚨</span>
+      </div>
+      <div class="kpi-num" style="color:var(--red-c);" id="kpi-cancer">0</div>
+      <div class="kpi-sub">Action required: RCC referral</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-label">Hardware Sensor Status</span>
+        <span class="kpi-icon">⚡</span>
+      </div>
+      <div class="kpi-num" style="font-size:1.6rem; color:var(--teal);">Calibrated</div>
+      <div class="kpi-sub">MQ-135 + Bio-Probe · 28°C Ambient</div>
+    </div>
+  </div>
+
+  <!-- SCREENING HISTORY RECORDS PANEL -->
+  <div class="records-panel">
+    <div class="records-header">
+      <div class="records-title-group">
+        <h2 class="records-title">Patient Screening History</h2>
+        <span class="records-badge" id="record-count-badge">0 Records</span>
+      </div>
+
+      <div class="records-toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="search-input" placeholder="Filter by notes or sample…" oninput="filterRecords()"/>
+        </div>
+
+        <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">All</button>
+        <button class="filter-btn" id="filter-healthy" onclick="setFilter('healthy')">🟢 Low Risk</button>
+        <button class="filter-btn" id="filter-cancer" onclick="setFilter('cancer')">🔴 High Risk</button>
+
+        <button class="btn-new-scan" onclick="handleNewScanClick()" style="padding:7px 16px; font-size:0.8rem;">
+          <span>+ New Scan</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT: DYNAMIC TABLE OR EMPTY STATE -->
+    <div id="records-content">
+      <div class="empty-state">
+        <div class="empty-icon-wrap">🔬</div>
+        <h3 class="empty-title">Loading screening history…</h3>
+        <p class="empty-desc">Fetching encrypted patient records from the SQLite database.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════ MODAL: BLUETOOTH PAIRING ═══════════ -->
+<div class="scan-modal-overlay" id="ble-connect-modal" onclick="closeBleModal()">
+  <div class="scan-modal-box ble-modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:1.6rem; color:var(--teal);">📶</span>
+        <div>
+          <h3 style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin:0;">Connect Device with Bluetooth</h3>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:2px 0 0;">MukhBODHITA Hardware Enclosure Wireless Pair</p>
+        </div>
+      </div>
+      <button class="close-x" onclick="closeBleModal()">✕</button>
+    </div>
+
+    <!-- INSTRUCTIONS STAGE -->
+    <div id="ble-stage-instructions">
+      <div class="ble-instruction-cards">
+        <div class="ble-step-item">
+          <div class="ble-step-num">1</div>
+          <div class="ble-step-info">
+            <h5>Turn on Bluetooth on your device</h5>
+            <p>Ensure Bluetooth is enabled in your phone, tablet, or laptop system settings.</p>
+          </div>
+          <span class="ble-step-icon">📱</span>
+        </div>
+
+        <div class="ble-step-item">
+          <div class="ble-step-num">2</div>
+          <div class="ble-step-info">
+            <h5>Turn on our MukhBODHITA device</h5>
+            <p>Slide the power switch on your handheld ESP32 enclosure to ON. The blue LED will start blinking.</p>
+          </div>
+          <span class="ble-step-icon">🛡️</span>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin: 24px 0 10px;">
+        <button class="btn-ble-refresh" id="ble-refresh-btn" onclick="startBleDiscovery()">
+          <span>🔄</span> <span>Refresh / Scan for Devices</span>
+        </button>
+      </div>
+
+      <!-- RADAR SCANNING ANIMATION (Appears during refresh) -->
+      <div id="ble-scanning-wrap" style="display:none;" class="ble-radar-container">
+        <div class="radar-circle">
+          <div class="radar-sweep"></div>
+        </div>
+        <p class="radar-text">Scanning 2.4GHz BLE spectrum for nearby devices…</p>
+      </div>
+
+      <!-- DISCOVERED DEVICES LIST (Appears after refresh finishes) -->
+      <div id="ble-device-list" style="display:none;" class="ble-device-list">
+        <span class="ble-list-title">Nearby Hardware Discovered (1 Found):</span>
+        <div class="discovered-card" onclick="connectToBleDevice()">
+          <div class="discovered-left">
+            <div class="ble-device-avatar">📶</div>
+            <div>
+              <div class="discovered-name">OncoSniff</div>
+              <div class="discovered-sn">Serial Number: <strong>OS-ESP32-8492</strong></div>
+              <div class="discovered-meta">ESP32-WROOM-32 &middot; Battery: 96% &middot; Signal: -52 dBm</div>
+            </div>
+          </div>
+          <button class="discovered-pair-btn">
+            <span>Connect →</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTING ANIMATION STAGE -->
+    <div id="ble-stage-connecting" style="display:none;" class="ble-center-stage">
+      <div class="ble-connecting-spinner-wrap">
+        <div class="ble-pulse-ring r1"></div>
+        <div class="ble-pulse-ring r2"></div>
+        <div class="ble-connecting-core">
+          <span>📶</span>
+        </div>
+      </div>
+      <h4 class="ble-stage-title">Connecting to OncoSniff…</h4>
+      <p class="ble-stage-desc">SN: <strong>OS-ESP32-8492</strong> &middot; Establishing encrypted BLE GATT channel</p>
+      <div class="ble-progress-track">
+        <div class="ble-progress-bar-fill" id="ble-connect-bar"></div>
+      </div>
+    </div>
+
+    <!-- SUCCESS ANIMATION STAGE -->
+    <div id="ble-stage-success" style="display:none;" class="ble-center-stage">
+      <div class="ble-success-badge">
+        <svg class="check-svg" viewBox="0 0 52 52">
+          <circle class="check-circle" cx="26" cy="26" r="24" fill="none"/>
+          <path class="check-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <h4 class="ble-stage-title" style="color:var(--green-c);">Device Successfully Connected!</h4>
+      <p class="ble-stage-desc" style="max-width:380px;">
+        <strong>OncoSniff (OS-ESP32-8492)</strong> is paired and ready. Both VOC MQ-135 and Bio-Impedance sensors are calibrated.
+      </p>
+      <div class="ble-specs-row">
+        <span>● Link: BLE 5.0</span>
+        <span>● Battery: 96%</span>
+        <span>● Sensors: Ready</span>
+      </div>
+      <button class="btn-new-scan" onclick="finishBleAndProceedToScan()" style="margin-top:20px; font-size:0.95rem; padding:12px 30px;">
+        <span>Proceed to Patient Scan →</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ MODAL: NEW SCAN ═══════════ -->
+<div class="scan-modal-overlay" id="new-scan-modal" onclick="closeNewScanModal()">
+  <div class="scan-modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div>
+        <h3>🔬 New Patient Screening</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">Multimodal VOC Gas & Bio-Impedance Sensor Diagnostic</p>
+      </div>
+      <button class="close-x" onclick="closeNewScanModal()">✕</button>
+    </div>
+
+    <!-- CONNECTED HARDWARE BADGE -->
+    <div id="modal-device-status-banner" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;margin-bottom:20px;font-size:0.8rem;">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <span class="device-pulse-dot"></span>
+        <span>Connected: <strong>OncoSniff</strong> (SN: OS-ESP32-8492)</span>
+      </span>
+      <span style="color:var(--text-muted);">Battery: 96% &middot; BLE Link Live</span>
+    </div>
+
+    <!-- PATIENT INFO -->
+    <span class="scan-step-title">1. Patient Information (Optional)</span>
+    <div class="scan-patient-row">
+      <div class="scan-field">
+        <label for="patient-name">Patient Name / Identifier</label>
+        <input type="text" id="patient-name" placeholder="e.g. Ramesh Kumar"/>
+      </div>
+      <div class="scan-field">
+        <label for="patient-age">Age & Gender</label>
+        <input type="text" id="patient-age" placeholder="e.g. 48 / Male"/>
+      </div>
+    </div>
+
+    <div class="scan-field" style="margin-bottom:18px;">
+      <label for="patient-habit">Tobacco & Oral Habit History</label>
+      <select id="patient-habit">
+        <option value="None">Non-Tobacco User (Healthy baseline)</option>
+        <option value="Gutkha / Khaini / Areca Nut (5+ years)">Gutkha / Khaini / Areca Nut (5+ years)</option>
+        <option value="Bidi / Cigarette Smoker (10+ years)">Bidi / Cigarette Smoker (10+ years)</option>
+        <option value="Dual Smoker + Tobacco Chewer (High risk)">Dual Smoker + Tobacco Chewer (High risk)</option>
+      </select>
+    </div>
+
+    <!-- SAMPLE SELECTION -->
+    <span class="scan-step-title">2. Select Physical Test Sample</span>
+    <div class="scan-sample-options">
+      <div class="scan-sample-card active" id="modal-sc-healthy" onclick="selectModalSample('healthy')">
+        <span class="scan-sample-icon">🟢</span>
+        <div class="scan-sample-info">
+          <h5>Healthy Control Sample</h5>
+          <p>Normal breath &middot; Intact tissue membrane</p>
+        </div>
+      </div>
+      <div class="scan-sample-card" id="modal-sc-cancer" onclick="selectModalSample('cancer')">
+        <span class="scan-sample-icon">🔴</span>
+        <div class="scan-sample-info">
+          <h5>Tumor-Simulating Sample</h5>
+          <p>Acetone VOC biomarker &middot; Ruptured ulcer</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HARDWARE SIMULATOR & WAVEFORM -->
+    <span class="scan-step-title">3. Multimodal Edge-AI Diagnostic</span>
+    <div class="scan-live-box">
+      <div class="scan-progress-bar">
+        <div class="scan-progress-fill" id="scan-progress-fill"></div>
+      </div>
+      <div class="scan-status-text" id="scan-status-label">Ready. Press START SCAN to initiate sensor sampling.</div>
+
+      <canvas id="modal-graph-canvas" class="scan-live-canvas" width="600" height="120"></canvas>
+
+      <div class="scan-meters-row">
+        <div class="meter-block">
+          <div class="meter-val" id="meter-voc">—</div>
+          <div class="meter-lbl">MQ-135 Gas (PPM)</div>
+        </div>
+        <div class="meter-block">
+          <div class="meter-val" id="meter-bio">—</div>
+          <div class="meter-lbl">Bio-Impedance (kΩ)</div>
+        </div>
+        <div class="meter-block">
+          <div class="meter-val" id="meter-temp">28.4°C</div>
+          <div class="meter-lbl">DHT11 Temp</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT BANNER (Appears after scan) -->
+    <div class="scan-result-card" id="scan-result-card">
+      <div class="result-score-circle">
+        <span class="result-score-num" id="modal-result-score">--</span>
+        <span class="result-score-lbl">Score</span>
+      </div>
+      <div>
+        <h4 id="modal-result-title" style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin-bottom:4px;">Diagnostic Result</h4>
+        <p id="modal-result-notes" style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">Analysis completed by ESP32 Late-Fusion neural network.</p>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div style="display:flex; justify-content:flex-end; gap:12px;">
+      <button class="nav-btn-link" onclick="closeNewScanModal()">Cancel</button>
+      <button class="btn-new-scan" id="modal-scan-btn" onclick="executeModalScan()">
+        <span>▶ Start Hardware Scan</span>
+      </button>
+      <button class="btn-new-scan" id="modal-save-btn" onclick="saveModalScan()" style="display:none; background:var(--green-c); color:#fff;">
+        <span>💾 Save & Add to Registry</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL: CLINICAL REPORT SLIP ═══════════ -->
+<div class="scan-modal-overlay" id="report-modal" onclick="closeReportModal()">
+  <div class="scan-modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3>📄 ABDM Clinical Referral Slip</h3>
+      <button class="close-x" onclick="closeReportModal()">✕</button>
+    </div>
+
+    <div class="slip-box" id="slip-content">
+      <!-- Populated dynamically -->
+    </div>
+
+    <div style="display:flex; justify-content:space-between; gap:12px;">
+      <button class="nav-btn-link" onclick="window.print()">🖨️ Print Slip</button>
+      <button class="btn-new-scan" onclick="closeReportModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+const API = (window.location.protocol.startsWith('http') && window.location.port)
+  ? `${window.location.origin}/api`
+  : 'http://localhost:3001/api';
+
+// ── Authentication Guard ──
+const token = localStorage.getItem('mb-token');
+const rawUser = localStorage.getItem('mb-user');
+if (!token || !rawUser) {
+  window.location.href = 'auth.html';
+}
+
+let currentUser = null;
+try {
+  currentUser = JSON.parse(rawUser);
+} catch (e) {
+  window.location.href = 'auth.html';
+}
+
+// ── Theme Setup ──
+function getTheme() { return localStorage.getItem('mb-theme') || 'dark'; }
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('dash-theme-icon');
+  if (icon) icon.textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('mb-theme', t);
+}
+function toggleTheme() {
+  applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+}
+applyTheme(getTheme());
+
+// ── User UI Display ──
+const roleNames = { asha: 'ASHA Worker', home: 'Citizen / Home', hospital: 'Hospital OPD' };
+document.getElementById('nav-user-name').textContent = currentUser.name || 'User';
+document.getElementById('nav-user-role').textContent = roleNames[currentUser.role] || currentUser.role;
+document.getElementById('welcome-name').textContent = currentUser.name || 'User';
+
+function dashLogout() {
+  localStorage.removeItem('mb-token');
+  localStorage.removeItem('mb-user');
+  showToast('Logged out. Returning to Sign In…', 'info');
+  setTimeout(() => { window.location.href = 'auth.html'; }, 600);
+}
+
+// ── Screenings State ──
+let allScreenings = [];
+let activeFilter = 'all';
+
+async function loadScreenings() {
+  const container = document.getElementById('records-content');
+  try {
+    const res = await fetch(`${API}/screenings`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.status === 401) {
+      dashLogout();
+      return;
+    }
+    const data = await res.json();
+    allScreenings = data.screenings || [];
+    renderDashboard();
+  } catch (err) {
+    console.error('Failed to load screenings:', err);
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon-wrap" style="border-color:var(--red-c); color:var(--red-c);">⚠️</div>
+        <h3 class="empty-title">Connection Error</h3>
+        <p class="empty-desc">Could not reach the local SQLite database. Please ensure backend server.js is running.</p>
+        <button class="btn-new-scan" onclick="loadScreenings()">🔄 Retry Connection</button>
+      </div>
+    `;
+  }
+}
+
+function renderDashboard() {
+  // Update KPIs
+  const total = allScreenings.length;
+  const healthyCount = allScreenings.filter(s => (s.verdict || '').toLowerCase().includes('low') || (s.verdict || '').toLowerCase().includes('healthy')).length;
+  const cancerCount  = allScreenings.filter(s => (s.verdict || '').toLowerCase().includes('high') || (s.verdict || '').toLowerCase().includes('referral')).length;
+  const healthyRate  = total > 0 ? Math.round((healthyCount / total) * 100) : 0;
+
+  document.getElementById('kpi-total').textContent = total;
+  document.getElementById('kpi-healthy').textContent = healthyCount;
+  document.getElementById('kpi-cancer').textContent = cancerCount;
+  document.getElementById('kpi-healthy-rate').textContent = `${healthyRate}% healthy rate`;
+  document.getElementById('record-count-badge').textContent = `${total} Records`;
+
+  renderRecordsTable();
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  ['all','healthy','cancer'].forEach(type => {
+    document.getElementById(`filter-${type}`)?.classList.toggle('active', type === f);
+  });
+  renderRecordsTable();
+}
+
+function filterRecords() {
+  renderRecordsTable();
+}
+
+function renderRecordsTable() {
+  const container = document.getElementById('records-content');
+  const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+
+  let list = allScreenings.filter(s => {
+    const isBad = (s.verdict || '').toLowerCase().includes('high') || (s.verdict || '').toLowerCase().includes('referral');
+    if (activeFilter === 'healthy' && isBad) return false;
+    if (activeFilter === 'cancer' && !isBad) return false;
+    if (query) {
+      const matchText = `${s.sample_type} ${s.verdict} ${s.ai_notes || ''} ${s.location || ''}`.toLowerCase();
+      if (!matchText.includes(query)) return false;
+    }
+    return true;
+  });
+
+  // If no records exist overall
+  if (allScreenings.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon-wrap">🔬</div>
+        <h3 class="empty-title">No Screening Records Found Yet</h3>
+        <p class="empty-desc">You haven't conducted any oral cancer screenings with this account. Connect your ₹350 ESP32 device or click "+ New Scan" to run a live diagnostic session.</p>
+        <button class="btn-new-scan" onclick="handleNewScanClick()" style="font-size:1rem; padding:12px 28px;">
+          <span>+ Start Your First Scan</span>
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // If filter returned 0
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state" style="padding:40px 20px;">
+        <div class="empty-icon-wrap" style="width:60px;height:60px;font-size:1.8rem;">🔍</div>
+        <h4 class="empty-title" style="font-size:1.15rem;">No matching records found</h4>
+        <p class="empty-desc" style="font-size:0.85rem; margin-bottom:16px;">Try clearing your search or filter keywords.</p>
+        <button class="nav-btn-link" onclick="document.getElementById('search-input').value='';setFilter('all');">Clear Filters</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Render Table
+  let rows = list.map(s => {
+    const isBad = (s.verdict || '').toLowerCase().includes('high') || (s.verdict || '').toLowerCase().includes('referral');
+    const d = s.screened_at ? new Date(s.screened_at + 'Z') : new Date();
+    const dateFormatted = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const timeFormatted = d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+
+    return `
+      <tr>
+        <td>
+          <strong style="font-family:var(--font-space); color:var(--text-primary);">#MB-${s.id}</strong>
+          <div style="font-size:0.75rem; color:var(--text-muted);">${dateFormatted} · ${timeFormatted}</div>
+        </td>
+        <td>
+          <div class="table-sample-chip">
+            <span>${s.sample_type === 'healthy' ? '🟢' : '🔴'}</span>
+            <span>${s.sample_type === 'healthy' ? 'Healthy Sample' : 'Risk Sample'}</span>
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-dim); margin-top:2px;">${s.ai_notes ? s.ai_notes.slice(0, 36) + '…' : 'Patient screening'}</div>
+        </td>
+        <td>
+          <span style="font-weight:700; font-family:var(--font-space);">${Math.round(s.voc_ppm)} PPM</span>
+          <div style="font-size:0.72rem; color:${s.voc_ppm > 400 ? 'var(--red-c)' : 'var(--green-c)'};">
+            ${s.voc_ppm > 400 ? '▲ Elevated Acetone' : '● Normal Ambient'}
+          </div>
+        </td>
+        <td>
+          <span style="font-weight:700; font-family:var(--font-space);">${Number(s.bio_kohm).toFixed(2)} kΩ</span>
+          <div style="font-size:0.72rem; color:${s.bio_kohm < 1.0 ? 'var(--red-c)' : 'var(--green-c)'};">
+            ${s.bio_kohm < 1.0 ? '▼ Low Resistance' : '● Intact Membrane'}
+          </div>
+        </td>
+        <td>
+          <div class="table-score-ring ${isBad ? 'cancer' : 'healthy'}">
+            ${s.wellness_score}
+          </div>
+        </td>
+        <td>
+          <span class="table-verdict-pill ${isBad ? 'cancer' : 'healthy'}">
+            <span>${isBad ? '🚨' : '✅'}</span>
+            <span>${s.verdict}</span>
+          </span>
+        </td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <button class="table-action-btn" onclick="viewReportSlip(${s.id})" title="View Clinical Referral Slip">
+              <span>📄 Slip</span>
+            </button>
+            <button class="table-action-btn del" onclick="deleteScreening(${s.id})" title="Delete record">
+              <span>🗑️</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="table-container">
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>Scan ID & Date</th>
+            <th>Sample / Patient</th>
+            <th>VOC Biomarker</th>
+            <th>Bio-Impedance</th>
+            <th>Score</th>
+            <th>AI Verdict</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ── Delete Screening ──
+async function deleteScreening(id) {
+  if (!confirm(`Are you sure you want to delete screening record #MB-${id}?`)) return;
+  try {
+    const res = await fetch(`${API}/screening/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Delete failed');
+    showToast(`Deleted record #MB-${id}`, 'info');
+    allScreenings = allScreenings.filter(s => s.id !== id);
+    renderDashboard();
+  } catch (err) {
+    showToast('Failed to delete record: ' + err.message, 'error');
+  }
+}
+
+// ── Report Slip Modal ──
+function viewReportSlip(id) {
+  const s = allScreenings.find(item => item.id === id);
+  if (!s) return;
+
+  const isBad = (s.verdict || '').toLowerCase().includes('high');
+  const d = s.screened_at ? new Date(s.screened_at + 'Z') : new Date();
+
+  document.getElementById('slip-content').innerHTML = `
+    <div class="slip-header">
+      <h4 style="font-size:1.1rem; font-weight:800; color:var(--text-primary); margin-bottom:4px;">MukhBODHITA CLINICAL REFERRAL REPORT</h4>
+      <p style="font-size:0.75rem; color:var(--text-muted);">Ayushman Bharat Digital Mission (ABDM) Aligned &middot; WHO Oral Screening</p>
+      <div style="margin-top:6px; font-size:0.78rem; color:var(--teal); font-weight:700;">SCAN ID: #MB-${s.id} &middot; DATE: ${d.toLocaleString('en-IN')}</div>
+    </div>
+
+    <div class="slip-row"><span>Screener / Operator:</span><strong>${currentUser.name} (${currentUser.role.toUpperCase()})</strong></div>
+    <div class="slip-row"><span>Worker ID / Reg:</span><strong>${currentUser.worker_id || currentUser.phone}</strong></div>
+    <div class="slip-row"><span>Facility / State:</span><strong>${currentUser.state || 'Rajasthan'}</strong></div>
+    <div class="slip-row"><span>Sample Evaluated:</span><strong>${s.sample_type === 'healthy' ? 'Healthy Control' : 'Ulcerated Tumor Tissue'}</strong></div>
+    <div style="border-top:1px dashed var(--border-dim); margin:10px 0;"></div>
+
+    <div class="slip-row"><span>VOC Gas Concentration:</span><strong>${s.voc_ppm} PPM (${s.voc_ppm > 400 ? 'ELEVATED' : 'NORMAL'})</strong></div>
+    <div class="slip-row"><span>Bio-Impedance Resistance:</span><strong>${s.bio_kohm} kΩ (${s.bio_kohm < 1.0 ? 'LOW MEMBRANE RESISTANCE' : 'HEALTHY CELLS'})</strong></div>
+    <div class="slip-row"><span>Ambient Temp (DHT11):</span><strong>${s.temp_c}°C Calibrated</strong></div>
+    <div class="slip-row"><span>Late-Fusion Wellness Score:</span><strong style="color:${isBad ? 'var(--red-c)' : 'var(--green-c)'}; font-size:1.1rem;">${s.wellness_score} / 100</strong></div>
+    <div style="border-top:1px dashed var(--border-dim); margin:10px 0;"></div>
+
+    <div class="slip-row"><span>AI Clinical Verdict:</span><strong style="color:${isBad ? 'var(--red-c)' : 'var(--green-c)'};">${s.verdict}</strong></div>
+    <div style="margin-top:8px; font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
+      <strong>Action Required:</strong> ${isBad
+        ? '⚠️ URGENT: Refer patient immediately to Regional Cancer Centre (RCC) / Dental Hospital for punch biopsy and histopathology.'
+        : '✅ Normal: Recommend routine 6-month visual re-examination and oral hygiene counseling.'}
+    </div>
+
+    <div style="margin-top:16px; text-align:center; padding:12px; background:var(--bg-card); border-radius:8px;">
+      <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:4px;">ABDM TELE-ONCOLOGY REFERRAL CODE</div>
+      <div style="font-family:monospace; font-size:0.95rem; font-weight:800; color:var(--teal); letter-spacing:2px;">
+        ABDM-${s.id}-ONCO-${Math.round(s.wellness_score)}-${(s.sample_type||'').toUpperCase()}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('report-modal').style.display = 'flex';
+}
+function closeReportModal() { document.getElementById('report-modal').style.display = 'none'; }
+
+// ── BLUETOOTH PAIRING & CONNECTION LOGIC ──
+let isDeviceConnected = false;
+
+function handleNewScanClick() {
+  if (!isDeviceConnected) {
+    openBleModal();
+  } else {
+    // Navigate to full scan wizard
+    window.location.href = 'scan.html';
+  }
+}
+
+function openBleModal() {
+  const modal = document.getElementById('ble-connect-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  resetBleModal();
+}
+
+function closeBleModal() {
+  const modal = document.getElementById('ble-connect-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function resetBleModal() {
+  document.getElementById('ble-stage-instructions').style.display = 'block';
+  document.getElementById('ble-scanning-wrap').style.display = 'none';
+  document.getElementById('ble-device-list').style.display = 'none';
+  document.getElementById('ble-stage-connecting').style.display = 'none';
+  document.getElementById('ble-stage-success').style.display = 'none';
+
+  const refBtn = document.getElementById('ble-refresh-btn');
+  if (refBtn) {
+    refBtn.disabled = false;
+    refBtn.innerHTML = '<span>🔄</span> <span>Refresh / Scan for Devices</span>';
+  }
+}
+
+function startBleDiscovery() {
+  const refBtn = document.getElementById('ble-refresh-btn');
+  const scanWrap = document.getElementById('ble-scanning-wrap');
+  const list = document.getElementById('ble-device-list');
+
+  refBtn.disabled = true;
+  refBtn.innerHTML = '<span class="spin-icon">🔄</span> <span>Scanning for devices…</span>';
+  scanWrap.style.display = 'flex';
+  list.style.display = 'none';
+
+  // Simulate BLE discovery of OncoSniff
+  setTimeout(() => {
+    scanWrap.style.display = 'none';
+    list.style.display = 'block';
+    refBtn.disabled = false;
+    refBtn.innerHTML = '<span>🔄</span> <span>Refresh Devices</span>';
+    showToast('📡 Discovered OncoSniff (OS-ESP32-8492) nearby', 'info');
+  }, 1200);
+}
+
+function connectToBleDevice() {
+  document.getElementById('ble-stage-instructions').style.display = 'none';
+  document.getElementById('ble-stage-connecting').style.display = 'flex';
+
+  const bar = document.getElementById('ble-connect-bar');
+  bar.style.width = '0%';
+  setTimeout(() => { bar.style.width = '40%'; }, 250);
+  setTimeout(() => { bar.style.width = '80%'; }, 750);
+  setTimeout(() => { bar.style.width = '100%'; }, 1200);
+
+  // Transition to success
+  setTimeout(() => {
+    document.getElementById('ble-stage-connecting').style.display = 'none';
+    document.getElementById('ble-stage-success').style.display = 'flex';
+
+    isDeviceConnected = true;
+    updateDeviceNavPill(true);
+    showToast('🎉 Device Successfully Connected!', 'success');
+  }, 1400);
+}
+
+function updateDeviceNavPill(connected) {
+  const pill = document.getElementById('nav-device-pill');
+  const dot  = document.getElementById('nav-device-dot');
+  const txt  = document.getElementById('nav-device-text');
+  if (!pill || !dot || !txt) return;
+
+  if (connected) {
+    pill.className = 'device-pill';
+    dot.className  = 'device-pulse-dot';
+    txt.textContent = '🟢 OncoSniff (OS-8492): Connected';
+  } else {
+    pill.className = 'device-pill disconnected';
+    dot.className  = 'device-pulse-dot disconnected';
+    txt.textContent = '📡 Disconnected · Tap to Connect';
+  }
+}
+
+function finishBleAndProceedToScan() {
+  closeBleModal();
+  window.location.href = 'scan.html';
+}
+
+// ── NEW SCAN MODAL LOGIC ──
+let modalSampleType = 'healthy';
+let scanRunning = false;
+let latestResult = null;
+
+function openNewScanModal() {
+  document.getElementById('new-scan-modal').style.display = 'flex';
+  resetModalScanState();
+}
+function closeNewScanModal() {
+  if (scanRunning) return;
+  document.getElementById('new-scan-modal').style.display = 'none';
+}
+
+function selectModalSample(type) {
+  if (scanRunning) return;
+  modalSampleType = type;
+  document.getElementById('modal-sc-healthy').classList.toggle('active', type === 'healthy');
+  document.getElementById('modal-sc-cancer').classList.toggle('active-cancer', type === 'cancer');
+  resetModalScanState();
+}
+
+function resetModalScanState() {
+  document.getElementById('scan-progress-fill').style.width = '0%';
+  document.getElementById('scan-status-label').textContent = 'Ready. Press START SCAN to initiate sensor sampling.';
+  document.getElementById('meter-voc').textContent = '—';
+  document.getElementById('meter-bio').textContent = '—';
+  document.getElementById('scan-result-card').style.display = 'none';
+  document.getElementById('modal-scan-btn').style.display = 'inline-flex';
+  document.getElementById('modal-save-btn').style.display = 'none';
+  drawModalWaveform([]);
+}
+
+function drawModalWaveform(points) {
+  const canvas = document.getElementById('modal-graph-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(128,160,200,0.08)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 3; i++) {
+    const y = (i / 3) * H;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  if (points.length < 2) return;
+
+  // Draw Line
+  ctx.beginPath();
+  ctx.strokeStyle = '#00e5cc';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = '#00e5cc';
+  ctx.shadowBlur = 8;
+  points.forEach((p, i) => {
+    const x = (i / 30) * W;
+    const y = H - (p / 1000) * (H - 20) - 10;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+function executeModalScan() {
+  if (scanRunning) return;
+  scanRunning = true;
+  document.getElementById('modal-scan-btn').style.display = 'none';
+
+  const isOk = modalSampleType === 'healthy';
+  const targetVoc = isOk ? 120 + Math.random()*50 : 860 + Math.random()*120;
+  const targetBio = isOk ? 4.2 + Math.random()*0.8 : 0.28 + Math.random()*0.35;
+  const targetTemp = 28.2;
+
+  const steps = [
+    '🔄 Initializing ESP32 ADC & MQ-135 heating coil…',
+    '💨 Sniffing exhaled ketone biomarkers…',
+    '⚡ Contact probe reading cellular bio-impedance…',
+    '🌡️ Calibrating baseline with DHT11 temperature…',
+    '🧠 Running offline Late-Fusion classification…',
+    '✅ Screening complete!'
+  ];
+
+  let tick = 0;
+  const graphPts = [];
+  const bar = document.getElementById('scan-progress-fill');
+  const statusLabel = document.getElementById('scan-status-label');
+
+  const timer = setInterval(() => {
+    tick++;
+    const progress = Math.min(tick / 30, 1);
+    bar.style.width = `${progress * 100}%`;
+
+    const stepIdx = Math.min(Math.floor((tick / 30) * steps.length), steps.length - 1);
+    statusLabel.textContent = steps[stepIdx];
+
+    const currentVoc = Math.round(targetVoc * progress + (Math.random() - 0.5) * 35);
+    const currentBio = (targetBio + (Math.random() - 0.5) * 0.15).toFixed(2);
+
+    graphPts.push(Math.max(40, currentVoc));
+    drawModalWaveform(graphPts);
+
+    document.getElementById('meter-voc').textContent = currentVoc + ' PPM';
+    document.getElementById('meter-bio').textContent = currentBio + ' kΩ';
+
+    if (tick >= 30) {
+      clearInterval(timer);
+      scanRunning = false;
+
+      const score = isOk ? 84 + Math.floor(Math.random()*12) : 16 + Math.floor(Math.random()*16);
+      const verdict = isOk ? 'Low Risk (Healthy)' : 'High Risk (Immediate Referral)';
+      const pName = document.getElementById('patient-name').value.trim() || 'Anonymous Patient';
+      const pHabit = document.getElementById('patient-habit').value;
+      const notes = `${pName} · Habit: ${pHabit} | VOC: ${Math.round(targetVoc)}PPM, Bio-Imp: ${targetBio.toFixed(2)}kΩ`;
+
+      latestResult = {
+        sample_type: modalSampleType,
+        voc_ppm: Math.round(targetVoc),
+        bio_kohm: parseFloat(targetBio.toFixed(2)),
+        temp_c: targetTemp,
+        wellness_score: score,
+        verdict: verdict,
+        ai_notes: notes,
+        location: currentUser.state || 'Rajasthan'
+      };
+
+      // Show result card
+      const resCard = document.getElementById('scan-result-card');
+      resCard.className = 'scan-result-card ' + (isOk ? '' : 'cancer');
+      resCard.style.display = 'flex';
+      document.getElementById('modal-result-score').textContent = score;
+      document.getElementById('modal-result-title').textContent = verdict;
+      document.getElementById('modal-result-notes').textContent = isOk
+        ? 'Normal VOC levels detected. High cellular impedance indicates healthy, intact epithelial membranes.'
+        : 'Elevated acetone/ketone biomarkers detected. Low bio-impedance indicates disrupted epithelial membrane typical of oral malignancies.';
+
+      document.getElementById('modal-save-btn').style.display = 'inline-flex';
+      showToast(isOk ? '✅ Scan Completed — Low Risk' : '⚠️ Scan Completed — High Risk Detected', isOk ? 'success' : 'error');
+    }
+  }, 100);
+}
+
+async function saveModalScan() {
+  if (!latestResult) return;
+  const saveBtn = document.getElementById('modal-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving to SQLite…';
+
+  try {
+    const res = await fetch(`${API}/screening`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(latestResult)
+    });
+    if (!res.ok) throw new Error('Failed to save to database');
+    showToast('💾 Successfully saved to SQLite patient registry!', 'success');
+    closeNewScanModal();
+    loadScreenings(); // Reload dashboard
+  } catch (err) {
+    showToast('Error saving: ' + err.message, 'error');
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 Save & Add to Registry';
+  }
+}
+
+// ── Toast System ──
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(40px)';
+    t.style.transition = '0.3s';
+    setTimeout(() => t.remove(), 300);
+  }, 3200);
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  loadScreenings();
+});
+</script>
+</body>
+</html>

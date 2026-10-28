@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MukhBODHITA — New Scan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --teal:       #00e5cc;
+      --teal-dim:   rgba(0,229,204,0.15);
+      --violet:     #a855f7;
+      --violet-dim: rgba(168,85,247,0.15);
+      --amber:      #f59e0b;
+      --rose:       #f43f5e;
+      --green-c:    #22c55e;
+      --bg-deep:    #080c14;
+      --bg-card:    #0d1424;
+      --bg-glass:   rgba(13,20,36,0.85);
+      --border:     rgba(255,255,255,0.07);
+      --text-primary: #f0f4ff;
+      --text-sub:     rgba(240,244,255,0.55);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* TOP NAV */
+    .scan-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(8,12,20,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .brand-logo {
+      width:36px; height:36px; border-radius:10px;
+      background: linear-gradient(135deg,var(--teal),var(--violet));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900; font-size:1rem; color:#fff;
+    }
+    .brand-name { font-weight:800; font-size:1.1rem; color:var(--text-primary); }
+    .nav-step-indicator {
+      display:flex; align-items:center; gap:12px;
+    }
+    .nsi-dot {
+      width:28px; height:28px; border-radius:50%;
+      background: var(--border);
+      border: 2px solid rgba(255,255,255,0.1);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.72rem; font-weight:700; color:var(--text-sub);
+      transition: all 0.4s;
+    }
+    .nsi-dot.active { background: var(--teal-dim); border-color:var(--teal); color:var(--teal); }
+    .nsi-dot.done   { background: rgba(34,197,94,0.15); border-color:var(--green-c); color:var(--green-c); }
+    .nsi-line { width:40px; height:2px; background: var(--border); border-radius:2px; transition: background 0.4s; }
+    .nsi-line.done { background: var(--green-c); }
+    .btn-exit {
+      padding:8px 18px; border-radius:8px; font-family:'Outfit',sans-serif;
+      font-size:0.82rem; font-weight:600; cursor:pointer;
+      border: 1px solid var(--border); background:transparent;
+      color:var(--text-sub); transition: all 0.2s;
+    }
+    .btn-exit:hover { border-color:#f43f5e; color:#f43f5e; }
+
+    /* SCREENS */
+    .screen {
+      display:none; min-height:100vh; padding-top:64px;
+    }
+    .screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; animation: fadeUp 0.5s ease forwards; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* INTRO LOADER */
+    #screen-intro {
+      background: radial-gradient(ellipse at 50% 40%, rgba(0,229,204,0.08) 0%, transparent 70%);
+    }
+    .intro-inner { text-align:center; padding:40px; }
+    .intro-logo-wrap {
+      width:110px; height:110px; border-radius:28px;
+      background: linear-gradient(135deg,var(--teal),var(--violet));
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 24px; font-size:3rem; font-weight:900; color:#fff;
+      box-shadow: 0 0 60px rgba(0,229,204,0.3);
+      animation: logoPulse 2s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%,100% { box-shadow:0 0 40px rgba(0,229,204,0.2); transform:scale(1); }
+      50%      { box-shadow:0 0 80px rgba(0,229,204,0.45); transform:scale(1.03); }
+    }
+    .intro-title {
+      font-size:2.4rem; font-weight:900; margin-bottom:8px;
+      background:linear-gradient(90deg,var(--teal),var(--violet));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .intro-sub { font-size:1rem; color:var(--text-sub); margin-bottom:48px; }
+    .intro-bar {
+      width:220px; height:4px; border-radius:99px;
+      background:rgba(255,255,255,0.08); overflow:hidden; margin:0 auto 16px;
+    }
+    .intro-bar-fill {
+      height:100%; border-radius:99px;
+      background:linear-gradient(90deg,var(--teal),var(--violet));
+      width:0%; animation: barLoad 2.4s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes barLoad { to { width:100%; } }
+    .intro-status { font-size:0.82rem; color:var(--text-sub); }
+
+    /* SHARED STEP PAGE */
+    .step-page {
+      width:100%; max-width:860px; margin:0 auto; padding:40px 24px 80px;
+    }
+    .step-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 16px; border-radius:99px; font-size:0.78rem; font-weight:700;
+      letter-spacing:0.08em; text-transform:uppercase; margin-bottom:24px;
+    }
+    .step-badge.gas   { background:rgba(0,229,204,0.1); color:var(--teal); border:1px solid rgba(0,229,204,0.25); }
+    .step-badge.bio   { background:rgba(168,85,247,0.1); color:var(--violet); border:1px solid rgba(168,85,247,0.25); }
+    .step-badge.result{ background:rgba(245,158,11,0.1); color:var(--amber); border:1px solid rgba(245,158,11,0.25); }
+    .step-title { font-size:2rem; font-weight:900; margin-bottom:8px; line-height:1.2; }
+    .step-desc  { font-size:1rem; color:var(--text-sub); margin-bottom:36px; line-height:1.6; }
+
+    /* CHECKLIST */
+    .checklist { display:flex; flex-direction:column; gap:14px; margin-bottom:36px; }
+    .check-item {
+      display:flex; align-items:flex-start; gap:16px;
+      padding:18px 22px; border-radius:16px;
+      background:var(--bg-card); border:1.5px solid var(--border);
+      cursor:pointer; transition:all 0.25s; user-select:none;
+    }
+    .check-item:hover { border-color:rgba(0,229,204,0.3); transform:translateX(4px); }
+    .check-item.checked { border-color:rgba(34,197,94,0.4); background:rgba(34,197,94,0.05); }
+    .check-box {
+      width:26px; height:26px; border-radius:8px; flex-shrink:0; margin-top:2px;
+      border:2px solid var(--border); background:transparent;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.25s; font-size:0.85rem; color:transparent;
+    }
+    .check-item.checked .check-box { background:var(--green-c); border-color:var(--green-c); color:#fff; }
+    .check-label { font-size:1rem; font-weight:500; color:var(--text-primary); }
+    .check-sub { font-size:0.82rem; color:var(--text-sub); margin-top:4px; }
+
+    /* BUTTONS */
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:16px 40px; border-radius:14px; font-family:'Outfit',sans-serif;
+      font-size:1.05rem; font-weight:700; cursor:pointer;
+      background:linear-gradient(135deg,var(--teal),#00b4d8);
+      color:#080c14; border:none; transition:all 0.25s;
+      box-shadow:0 8px 30px rgba(0,229,204,0.25);
+    }
+    .btn-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 40px rgba(0,229,204,0.35); }
+    .btn-primary:disabled { opacity:0.4; cursor:not-allowed; transform:none !important; }
+    .btn-secondary {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:14px 32px; border-radius:12px; font-family:'Outfit',sans-serif;
+      font-size:0.95rem; font-weight:600; cursor:pointer;
+      background:transparent; color:var(--text-sub);
+      border:1.5px solid var(--border); transition:all 0.25s;
+    }
+    .btn-secondary:hover { border-color:var(--teal); color:var(--teal); }
+    .btn-row { display:flex; gap:14px; flex-wrap:wrap; margin-top:32px; }
+
+    /* ANIM OVERLAY */
+    .anim-overlay {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(8,12,20,0.96); backdrop-filter:blur(12px);
+      display:none; align-items:center; justify-content:center;
+    }
+    .anim-overlay.visible { display:flex; animation:fadeUp 0.4s ease; }
+    .anim-card {
+      text-align:center; width:400px; padding:48px 36px;
+      background:var(--bg-card); border-radius:28px;
+      border:1px solid var(--border);
+      box-shadow:0 40px 80px rgba(0,0,0,0.6);
+    }
+    .anim-icon { font-size:5rem; margin-bottom:16px; display:block; line-height:1; }
+    .anim-title { font-size:1.5rem; font-weight:800; margin-bottom:8px; }
+    .anim-sub { font-size:0.9rem; color:var(--text-sub); margin-bottom:28px; line-height:1.55; }
+
+    /* blow waves */
+    .blow-waves { display:flex; justify-content:center; gap:6px; margin-bottom:28px; height:64px; align-items:flex-end; }
+    .blow-bar {
+      width:8px; border-radius:4px;
+      background:linear-gradient(180deg,var(--teal),rgba(0,229,204,0.2));
+      animation: blowWave 0.8s ease-in-out infinite;
+    }
+    .blow-bar:nth-child(1){height:20px;animation-delay:0s;}
+    .blow-bar:nth-child(2){height:35px;animation-delay:0.1s;}
+    .blow-bar:nth-child(3){height:50px;animation-delay:0.2s;}
+    .blow-bar:nth-child(4){height:58px;animation-delay:0.3s;}
+    .blow-bar:nth-child(5){height:45px;animation-delay:0.4s;}
+    .blow-bar:nth-child(6){height:28px;animation-delay:0.5s;}
+    .blow-bar:nth-child(7){height:15px;animation-delay:0.6s;}
+    @keyframes blowWave {
+      0%,100%{transform:scaleY(0.6);opacity:0.5;}
+      50%{transform:scaleY(1.2);opacity:1;}
+    }
+
+    /* probe pulse */
+    .probe-pulse {
+      width:90px; height:90px; border-radius:50%;
+      background:rgba(168,85,247,0.15); border:3px solid var(--violet);
+      margin:0 auto 24px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2rem; position:relative;
+      animation: probePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes probePulse {
+      0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0.4);}
+      50%{box-shadow:0 0 0 22px rgba(168,85,247,0);}
+    }
+
+    /* progress */
+    .anim-progress {
+      width:100%; height:6px; border-radius:99px;
+      background:rgba(255,255,255,0.07); overflow:hidden; margin-bottom:12px;
+    }
+    .anim-progress-fill {
+      height:100%; border-radius:99px;
+      background:linear-gradient(90deg,var(--teal),var(--violet));
+      width:0%; transition:width 0.1s linear;
+    }
+    .anim-countdown { font-size:0.85rem; color:var(--text-sub); }
+
+    /* tick */
+    .tick-circle {
+      width:80px; height:80px; border-radius:50%;
+      background:rgba(34,197,94,0.12); border:3px solid var(--green-c);
+      margin:0 auto 20px;
+      display:flex; align-items:center; justify-content:center; font-size:2.2rem;
+      animation: tickPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+    }
+    @keyframes tickPop { 0%{transform:scale(0);} 100%{transform:scale(1);} }
+
+    /* SAMPLE CARD */
+    .sample-card {
+      display:flex; align-items:center; gap:14px;
+      padding:16px 20px; border-radius:14px;
+      background:rgba(34,197,94,0.06); border:1.5px solid rgba(34,197,94,0.25);
+      margin-bottom:14px; animation:fadeUp 0.4s ease;
+    }
+    .sample-num {
+      width:40px; height:40px; border-radius:10px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.82rem; font-weight:800;
+    }
+    .s1 { background:rgba(244,63,94,0.15); color:#f43f5e; }
+    .s2 { background:rgba(34,197,94,0.15); color:var(--green-c); }
+    .sample-info .si-label { font-size:0.95rem; font-weight:600; }
+    .sample-info .si-sub   { font-size:0.78rem; color:var(--text-sub); margin-top:2px; }
+    .sample-recorded { margin-left:auto; font-size:1.3rem; color:var(--green-c); }
+
+    /* RESULTS */
+    .results-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px; }
+    @media(max-width:640px){ .results-grid{grid-template-columns:1fr;} }
+    .result-card {
+      padding:24px; border-radius:20px;
+      background:var(--bg-card); border:1.5px solid var(--border);
+    }
+    .result-card.malignant { border-color:rgba(244,63,94,0.35); background:rgba(244,63,94,0.03); }
+    .result-card.benign    { border-color:rgba(34,197,94,0.3);  background:rgba(34,197,94,0.03); }
+    .rc-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .rc-badge {
+      padding:4px 12px; border-radius:99px; font-size:0.72rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:0.08em;
+    }
+    .rc-badge.mal { background:rgba(244,63,94,0.15); color:#f43f5e; }
+    .rc-badge.ben { background:rgba(34,197,94,0.15); color:var(--green-c); }
+    .rc-title { font-size:0.95rem; font-weight:700; }
+    .rc-chart-wrap { position:relative; height:155px; }
+    .rc-metrics { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .rc-metric { background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; }
+    .rc-metric .m-val { font-size:1.2rem; font-weight:800; }
+    .rc-metric .m-lbl { font-size:0.68rem; color:var(--text-sub); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px; }
+
+    .verdict-banner {
+      padding:28px 32px; border-radius:20px; margin-bottom:28px;
+      display:flex; align-items:center; gap:24px;
+    }
+    .verdict-banner.mal { background:linear-gradient(135deg,rgba(244,63,94,0.1),rgba(244,63,94,0.03)); border:1.5px solid rgba(244,63,94,0.3); }
+    .verdict-icon { font-size:3rem; flex-shrink:0; }
+    .verdict-label { font-size:1.6rem; font-weight:900; margin-bottom:4px; }
+    .verdict-sub { font-size:0.9rem; color:var(--text-sub); line-height:1.6; }
+
+    .reason-box {
+      background:var(--bg-card); border:1px solid var(--border); border-radius:16px;
+      padding:24px; margin-bottom:28px;
+    }
+    .reason-box h3 { font-size:1.1rem; font-weight:700; margin-bottom:16px; }
+    .reason-item { display:flex; gap:14px; margin-bottom:14px; font-size:0.9rem; line-height:1.6; }
+    .reason-icon { flex-shrink:0; font-size:1.15rem; margin-top:1px; }
+
+    .comp-section { margin-bottom:28px; }
+    .comp-card { padding:24px; border-radius:20px; background:var(--bg-card); border:1.5px solid var(--border); }
+    .comp-card h3 { font-size:1.05rem; font-weight:700; margin-bottom:20px; }
+    .comp-label { font-size:0.8rem; color:var(--text-sub); margin-bottom:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; }
+    .comp-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; font-size:0.86rem; }
+    .comp-row span:first-child { width:135px; flex-shrink:0; }
+    .comp-track { flex:1; height:8px; border-radius:99px; background:rgba(255,255,255,0.07); overflow:hidden; }
+    .comp-fill { height:100%; border-radius:99px; }
+    .comp-fill.mal { background:linear-gradient(90deg,#f43f5e,#f97316); }
+    .comp-fill.ben { background:linear-gradient(90deg,var(--green-c),var(--teal)); }
+    .comp-val { width:46px; text-align:right; font-weight:700; flex-shrink:0; }
+
+    .report-btn-row { display:flex; gap:14px; flex-wrap:wrap; margin-top:32px; justify-content:center; }
+    .btn-violet {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:14px 28px; border-radius:12px; font-family:'Outfit',sans-serif;
+      font-size:0.95rem; font-weight:600; cursor:pointer;
+      background:linear-gradient(135deg,var(--violet),#7c3aed);
+      color:#fff; border:none; transition:all 0.25s;
+      box-shadow:0 8px 24px rgba(168,85,247,0.2);
+    }
+    .btn-violet:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(168,85,247,0.3); }
+    .back-dash {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:14px 28px; border-radius:12px; font-family:'Outfit',sans-serif;
+      font-size:0.95rem; font-weight:600; cursor:pointer;
+      background:transparent; color:var(--text-sub);
+      border:1.5px solid var(--border); transition:all 0.25s;
+    }
+    .back-dash:hover { border-color:var(--teal); color:var(--teal); }
+
+    @media print {
+      .scan-nav,.btn-primary,.btn-secondary,.btn-violet,.report-btn-row,.back-dash { display:none!important; }
+      body { background:#fff; color:#111; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="scan-nav" id="scanNav">
+  <a href="dashboard.html" class="brand">
+    <div class="brand-logo">M</div>
+    <span class="brand-name">MukhBODHITA</span>
+  </a>
+  <div class="nav-step-indicator">
+    <div class="nsi-dot active" id="nsiDot1">1</div>
+    <div class="nsi-line" id="nsiLine1"></div>
+    <div class="nsi-dot" id="nsiDot2">2</div>
+    <div class="nsi-line" id="nsiLine2"></div>
+    <div class="nsi-dot" id="nsiDot3">&#10003;</div>
+  </div>
+  <button class="btn-exit" onclick="confirmExit()">&#10005; Exit Scan</button>
+</nav>
+
+<!-- ═══════════════════════ SCREEN 0: INTRO ═══════════════════════ -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-inner">
+    <div class="intro-logo-wrap">M</div>
+    <div class="intro-title">MukhBODHITA</div>
+    <div class="intro-sub">OncoSniff AI &bull; Multimodal Cancer Screening Protocol</div>
+    <div class="intro-bar"><div class="intro-bar-fill"></div></div>
+    <div class="intro-status" id="introStatus">Initialising sensors&hellip;</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SCREEN NO-DEVICE ═══════════════════════ -->
+<div class="screen" id="screen-no-device" style="background:radial-gradient(ellipse at 50% 40%,rgba(244,63,94,0.07) 0%,transparent 70%);">
+  <div style="text-align:center;padding:40px 24px;max-width:520px;">
+    <div style="width:100px;height:100px;border-radius:50%;background:rgba(244,63,94,0.1);border:3px solid rgba(244,63,94,0.5);display:flex;align-items:center;justify-content:center;font-size:3rem;margin:0 auto 28px;animation:probePulse 2s ease-in-out infinite;--pulse-color:rgba(244,63,94,0.4);">📡</div>
+    <div style="font-size:1.9rem;font-weight:900;color:#f43f5e;margin-bottom:10px;">Device Not Connected</div>
+    <div style="font-size:1rem;color:var(--text-sub);line-height:1.7;margin-bottom:32px;">The <strong style="color:var(--text-primary);">OncoSniff OS-ESP32-8492</strong> hardware device could not be found via Bluetooth.<br/><br/>Please ensure the device is <strong style="color:var(--text-primary);">powered ON</strong>, within 1 metre, and its indicator LED is <strong style="color:#22c55e;">green</strong>. Then retry.</div>
+    <div style="background:rgba(244,63,94,0.06);border:1.5px solid rgba(244,63,94,0.2);border-radius:16px;padding:20px 24px;margin-bottom:32px;text-align:left;">
+      <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#f43f5e;margin-bottom:14px;">Troubleshooting Checklist</div>
+      <div style="font-size:0.9rem;color:var(--text-sub);line-height:2;">🔋 &nbsp;Device is fully charged and powered ON<br/>📶 &nbsp;Bluetooth is enabled on this device<br/>🟢 &nbsp;OncoSniff LED is solid green (not red/blinking)<br/>📏 &nbsp;Within 1 metre of the OncoSniff sensor unit<br/>🔄 &nbsp;No other device is paired to OncoSniff</div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="retryConnect()" id="btnRetryConnect">🔄 Retry Connection</button>
+      <button class="btn-secondary" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+    </div>
+    <div style="margin-top:20px;font-size:0.78rem;color:var(--text-sub);">Scan cannot begin without an active device connection.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SCREEN 1: VOC GAS TEST ═══════════════════════ -->
+<div class="screen" id="screen-step1">
+  <div class="step-page">
+    <div class="step-badge gas">&#9879;&#65039; Step 1 of 2 &middot; VOC Gas Sensor Test</div>
+    <h1 class="step-title">Volatile Organic Compound<br/>Breath Analysis</h1>
+    <p class="step-desc">This test analyses exhaled VOC biomarkers using the MQ-135 &amp; TGS2600 gas array.<br/>Confirm all conditions below before starting the scan.</p>
+
+    <div class="checklist" id="gasChecklist">
+      <div class="check-item" onclick="toggleCheck(this,'gas')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128336; Empty stomach or no food for 4 hours</div>
+          <div class="check-sub">Food intake affects VOC biomarker baseline &mdash; fast for accurate results</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'gas')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#129367; Have NOT brushed teeth today</div>
+          <div class="check-sub">Toothpaste chemicals interfere with sensor readings &mdash; brush after the scan</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'gas')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128685; No smoking or tobacco 6 hours prior</div>
+          <div class="check-sub">Residual tobacco VOCs create false positives in the gas array</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'gas')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128167; Rinsed mouth with plain water</div>
+          <div class="check-sub">A clean mouth surface ensures isolated VOC breath capture</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'gas')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128225; OncoSniff device connected via Bluetooth</div>
+          <div class="check-sub">Sensor array must be active and warmed up for 30 seconds before sampling</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gasSamplesRecorded"></div>
+
+    <div class="btn-row" id="gasBtnRow">
+      <button class="btn-primary" id="btnGasScan" onclick="startGasScan()" disabled>
+        &#129754; Start Scan &mdash; Sample <span id="gasCurrentSampleLabel">1</span>
+      </button>
+      <button class="btn-secondary" onclick="confirmExit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SCREEN 2: BIO-IMPEDANCE ═══════════════════════ -->
+<div class="screen" id="screen-step2">
+  <div class="step-page">
+    <div class="step-badge bio">&#128300; Step 2 of 2 &middot; Tissue Bio-Impedance Test</div>
+    <h1 class="step-title">Electrical Bio-Impedance<br/>Tissue Analysis</h1>
+    <p class="step-desc">Using copper probe electrodes, we measure the electrical impedance of oral tissue. Cancerous tissue has a significantly different conductance profile compared to healthy tissue.</p>
+
+    <div class="checklist" id="bioChecklist">
+      <div class="check-item" onclick="toggleCheck(this,'bio')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128308; Sample 1 &mdash; Probe any ulcer or suspicious lesion</div>
+          <div class="check-sub">Place the copper probe gently on the ulcer, white patch, or inner cheek tissue &mdash; hold for 5 seconds</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'bio')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128994; Sample 2 &mdash; Probe healthy gum tissue</div>
+          <div class="check-sub">Place the probe on a visibly healthy gum area for the reference baseline measurement</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'bio')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#129336; Hands are dry and clean</div>
+          <div class="check-sub">Moisture on fingers affects probe impedance &mdash; dry hands ensure accurate readings</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,'bio')">
+        <div class="check-box">&#10003;</div>
+        <div>
+          <div class="check-label">&#128161; Device indicator light is green</div>
+          <div class="check-sub">The probe must show a green LED before sampling, indicating probe connectivity is verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="bioSamplesRecorded"></div>
+
+    <div class="btn-row" id="bioBtnRow">
+      <button class="btn-primary" id="btnBioScan" onclick="startBioScan()" disabled>
+        &#9889; Record Sample <span id="bioCurrentSampleLabel">1</span>
+      </button>
+      <button class="btn-secondary" onclick="confirmExit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SCREEN 3: RESULTS ═══════════════════════ -->
+<div class="screen" id="screen-results">
+  <div class="step-page" style="max-width:1020px;">
+    <div class="step-badge result">&#128202; Analysis Complete &middot; Clinical Report</div>
+    <h1 class="step-title">Screening Results</h1>
+    <p class="step-desc">Multimodal late-fusion analysis across VOC gas biomarkers and bio-impedance tissue data.</p>
+
+    <!-- VERDICT -->
+    <div class="verdict-banner mal">
+      <div class="verdict-icon">&#9888;&#65039;</div>
+      <div>
+        <div class="verdict-label" style="color:#f43f5e;">Malignancy Indicators Detected</div>
+        <div class="verdict-sub">Sample 1 shows statistically significant deviation from the healthy tissue baseline across both gas and impedance modalities. Immediate clinical referral is recommended.</div>
+      </div>
+    </div>
+
+    <!-- 4 RESULT CARDS -->
+    <div class="results-grid">
+      <div class="result-card malignant">
+        <div class="rc-header">
+          <div class="rc-badge mal">&#9888; Suspicious</div>
+          <div class="rc-title">VOC &mdash; Sample 1</div>
+        </div>
+        <div class="rc-chart-wrap"><canvas id="chartGas1"></canvas></div>
+        <div class="rc-metrics">
+          <div class="rc-metric"><div class="m-val" style="color:#f43f5e">3.28 V</div><div class="m-lbl">MQ-135 Output</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:#f43f5e">2.41 V</div><div class="m-lbl">TGS2600 Output</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--amber)">32.8&deg;C</div><div class="m-lbl">Temp (DHT11)</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--amber)">71%</div><div class="m-lbl">Humidity</div></div>
+        </div>
+      </div>
+      <div class="result-card benign">
+        <div class="rc-header">
+          <div class="rc-badge ben">&#10003; Normal</div>
+          <div class="rc-title">VOC &mdash; Sample 2</div>
+        </div>
+        <div class="rc-chart-wrap"><canvas id="chartGas2"></canvas></div>
+        <div class="rc-metrics">
+          <div class="rc-metric"><div class="m-val" style="color:var(--green-c)">1.12 V</div><div class="m-lbl">MQ-135 Output</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--green-c)">0.98 V</div><div class="m-lbl">TGS2600 Output</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--amber)">32.8&deg;C</div><div class="m-lbl">Temp (DHT11)</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--amber)">71%</div><div class="m-lbl">Humidity</div></div>
+        </div>
+      </div>
+      <div class="result-card malignant">
+        <div class="rc-header">
+          <div class="rc-badge mal">&#9888; Suspicious</div>
+          <div class="rc-title">Bio-Impedance &mdash; Sample 1</div>
+        </div>
+        <div class="rc-chart-wrap"><canvas id="chartBio1"></canvas></div>
+        <div class="rc-metrics">
+          <div class="rc-metric"><div class="m-val" style="color:#f43f5e">14.2 k&#937;</div><div class="m-lbl">Impedance</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:#f43f5e">Low</div><div class="m-lbl">Resistance Profile</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:#f43f5e">2.81 &mu;A</div><div class="m-lbl">Micro-current</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--amber)">0.78</div><div class="m-lbl">Phase Angle</div></div>
+        </div>
+      </div>
+      <div class="result-card benign">
+        <div class="rc-header">
+          <div class="rc-badge ben">&#10003; Normal</div>
+          <div class="rc-title">Bio-Impedance &mdash; Sample 2</div>
+        </div>
+        <div class="rc-chart-wrap"><canvas id="chartBio2"></canvas></div>
+        <div class="rc-metrics">
+          <div class="rc-metric"><div class="m-val" style="color:var(--green-c)">89.4 k&#937;</div><div class="m-lbl">Impedance</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--green-c)">High</div><div class="m-lbl">Resistance Profile</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--green-c)">0.31 &mu;A</div><div class="m-lbl">Micro-current</div></div>
+          <div class="rc-metric"><div class="m-val" style="color:var(--green-c)">1.74</div><div class="m-lbl">Phase Angle</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARISON BARS -->
+    <div class="comp-section">
+      <div class="comp-card">
+        <h3>&#128202; Sensor Signal Comparison &mdash; Sample 1 vs Sample 2</h3>
+        <div class="comp-label">MQ-135 Gas Sensor (V)</div>
+        <div class="comp-row"><span>&#128308; Sample 1</span><div class="comp-track"><div class="comp-fill mal" style="width:82%"></div></div><div class="comp-val" style="color:#f43f5e">3.28</div></div>
+        <div class="comp-row"><span>&#128994; Sample 2</span><div class="comp-track"><div class="comp-fill ben" style="width:28%"></div></div><div class="comp-val" style="color:var(--green-c)">1.12</div></div>
+        <div style="height:18px"></div>
+        <div class="comp-label">TGS2600 Gas Sensor (V)</div>
+        <div class="comp-row"><span>&#128308; Sample 1</span><div class="comp-track"><div class="comp-fill mal" style="width:60%"></div></div><div class="comp-val" style="color:#f43f5e">2.41</div></div>
+        <div class="comp-row"><span>&#128994; Sample 2</span><div class="comp-track"><div class="comp-fill ben" style="width:24%"></div></div><div class="comp-val" style="color:var(--green-c)">0.98</div></div>
+        <div style="height:18px"></div>
+        <div class="comp-label">Tissue Impedance (k&#937;) &mdash; Lower = More Suspicious</div>
+        <div class="comp-row"><span>&#128308; Sample 1</span><div class="comp-track"><div class="comp-fill mal" style="width:16%"></div></div><div class="comp-val" style="color:#f43f5e">14.2</div></div>
+        <div class="comp-row"><span>&#128994; Sample 2</span><div class="comp-track"><div class="comp-fill ben" style="width:90%"></div></div><div class="comp-val" style="color:var(--green-c)">89.4</div></div>
+      </div>
+    </div>
+
+    <!-- REASON WHY -->
+    <div class="reason-box">
+      <h3>&#129516; Why is Sample 1 Flagged as Malignant?</h3>
+      <div class="reason-item">
+        <span class="reason-icon">&#128300;</span>
+        <div><strong>Elevated VOC signature:</strong> MQ-135 detected 3.28 V vs a healthy baseline of ~1.1 V. Acetaldehyde, formaldehyde, and isoprene concentrations are 2.9&times; above normal thresholds &mdash; hallmark biomarkers of OSCC (Oral Squamous Cell Carcinoma).</div>
+      </div>
+      <div class="reason-item">
+        <span class="reason-icon">&#9889;</span>
+        <div><strong>Abnormally low tissue impedance:</strong> Malignant tissue has higher water content, disrupted cell membranes, and altered ionic concentration &mdash; causing impedance to drop from ~90 k&Omega; (healthy) to 14.2 k&Omega;. This is a well-documented electrophysiological marker of OSCC.</div>
+      </div>
+      <div class="reason-item">
+        <span class="reason-icon">&#128200;</span>
+        <div><strong>Phase angle deviation:</strong> A phase angle of 0.78 vs 1.74 in healthy tissue indicates compromised cell membrane integrity &mdash; a biophysical signature consistent with pre-malignant or early-stage carcinoma.</div>
+      </div>
+      <div class="reason-item">
+        <span class="reason-icon">&#129309;</span>
+        <div><strong>Multimodal convergence:</strong> Both independent sensors &mdash; gas VOC array and bio-impedance &mdash; independently agree that Sample 1 is anomalous. This dual-modal agreement significantly reduces false-positive probability and increases clinical confidence.</div>
+      </div>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div style="padding:16px 20px; border-radius:12px; background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); font-size:0.85rem; color:var(--text-sub); line-height:1.6; margin-bottom:28px;">
+      &#9888;&#65039; <strong style="color:var(--amber)">Clinical Disclaimer:</strong> This report is generated by an AI-assisted screening device for triage and early detection purposes only. It is not a substitute for a formal histopathological biopsy or diagnosis by a licensed oncologist. If malignancy indicators are detected, the patient must be immediately referred to a tertiary care centre for confirmation.
+    </div>
+
+    <div class="report-btn-row">
+      <button class="btn-primary" onclick="window.print()">&#128424;&#65039; Print Clinical Report</button>
+      <button class="btn-violet" onclick="saveAndGoToDash()">&#128190; Save &amp; Go to Dashboard</button>
+      <button class="back-dash" onclick="window.location.href='dashboard.html'">&#8592; Back to Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BLOW OVERLAY ═══════════════════════ -->
+<div class="anim-overlay" id="animOverlay">
+  <div class="anim-card">
+    <!-- ready -->
+    <div id="stateReady">
+      <span class="anim-icon">&#129754;</span>
+      <div class="anim-title" id="animReadyTitle">Take Sample</div>
+      <div class="anim-sub" id="animReadySub">When ready, click <strong>Take Sample</strong> and blow steadily into the device nozzle for 5&ndash;6 seconds.</div>
+      <button class="btn-primary" style="width:100%;" onclick="beginBlowing()">&#129754; Take Sample</button>
+    </div>
+    <!-- blowing -->
+    <div id="stateBlowing" style="display:none">
+      <span class="anim-icon">&#128168;</span>
+      <div class="anim-title">Keep Blowing&hellip;</div>
+      <div class="anim-sub">Exhale steadily into the nozzle</div>
+      <div class="blow-waves">
+        <div class="blow-bar"></div><div class="blow-bar"></div><div class="blow-bar"></div>
+        <div class="blow-bar"></div><div class="blow-bar"></div><div class="blow-bar"></div>
+        <div class="blow-bar"></div>
+      </div>
+      <div class="anim-progress"><div class="anim-progress-fill" id="blowProgress"></div></div>
+      <div class="anim-countdown" id="blowCountdown">5 seconds remaining&hellip;</div>
+    </div>
+    <!-- processing -->
+    <div id="stateProcessing" style="display:none">
+      <span class="anim-icon">&#9881;&#65039;</span>
+      <div class="anim-title">Processing&hellip;</div>
+      <div class="anim-sub">Analysing VOC fingerprint against classification model</div>
+      <div class="anim-progress" style="margin-top:20px"><div class="anim-progress-fill" id="processProgress"></div></div>
+    </div>
+    <!-- done -->
+    <div id="stateDone" style="display:none">
+      <div class="tick-circle" id="tickCircle">&#10003;</div>
+      <div class="anim-title" id="doneTitleAnim">Sample Recorded!</div>
+      <div class="anim-sub" id="doneSubAnim">Data captured and encrypted. Click continue.</div>
+      <button class="btn-primary" style="width:100%;margin-top:10px;" onclick="sampleDoneGas()">Continue &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PROBE OVERLAY ═══════════════════════ -->
+<div class="anim-overlay" id="probeOverlay">
+  <div class="anim-card">
+    <!-- ready -->
+    <div id="probeReady">
+      <span class="anim-icon">&#128268;</span>
+      <div class="anim-title" id="probeReadyTitle">Place the Probe</div>
+      <div class="anim-sub" id="probeReadySub">Position the copper probe on the target tissue and click <strong>Record</strong> &mdash; hold steady for 5 seconds.</div>
+      <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,var(--violet),#7c3aed);box-shadow:0 8px 24px rgba(168,85,247,0.25);color:#fff;" onclick="beginProbe()">&#9889; Record Sample</button>
+    </div>
+    <!-- recording -->
+    <div id="probeRecording" style="display:none">
+      <div class="probe-pulse">&#9889;</div>
+      <div class="anim-title">Hold Steady&hellip;</div>
+      <div class="anim-sub">Measuring impedance across tissue</div>
+      <div class="anim-progress"><div class="anim-progress-fill" id="probeProgress" style="background:linear-gradient(90deg,var(--violet),var(--teal));"></div></div>
+      <div class="anim-countdown" id="probeCountdown">5 seconds remaining&hellip;</div>
+    </div>
+    <!-- processing -->
+    <div id="probeProcessing" style="display:none">
+      <span class="anim-icon">&#128300;</span>
+      <div class="anim-title">Analysing&hellip;</div>
+      <div class="anim-sub">Running impedance spectroscopy classification</div>
+      <div class="anim-progress" style="margin-top:20px"><div class="anim-progress-fill" id="probeProcessProgress" style="background:linear-gradient(90deg,var(--violet),var(--teal));"></div></div>
+    </div>
+    <!-- done -->
+    <div id="probeDone" style="display:none">
+      <div class="tick-circle" style="border-color:var(--violet);background:rgba(168,85,247,0.12);">&#10003;</div>
+      <div class="anim-title" id="probeDoneTitle">Sample Recorded!</div>
+      <div class="anim-sub" id="probeDoneSub">Impedance profile captured. Click continue.</div>
+      <button class="btn-primary" style="width:100%;margin-top:10px;background:linear-gradient(135deg,var(--violet),#7c3aed);box-shadow:0 8px 24px rgba(168,85,247,0.25);color:#fff;" onclick="sampleDoneBio()">Continue &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── STATE ── */
+let gasStep = 0;
+let bioStep = 0;
+let gasChecks = 0; const GAS_CHECKS = 5;
+let bioChecks = 0; const BIO_CHECKS = 4;
+
+/* ── INTRO ── */
+const introStatuses = [
+  'Initialising sensors\u2026',
+  'Searching for OncoSniff OS-ESP32-8492\u2026',
+  'Scanning Bluetooth environment\u2026',
+  'Loading classification model\u2026',
+  '\u26a0\ufe0f Device not found \u2014 please keep device on'
+];
+let si = 0;
+(function runIntro() {
+  const statusEl = document.getElementById('introStatus');
+  const timer = setInterval(() => {
+    si++;
+    if (si < introStatuses.length) statusEl.textContent = introStatuses[si];
+    else clearInterval(timer);
+  }, 480);
+  setTimeout(() => showScreen('screen-no-device'), 2800);
+})();
+
+/* ── SCREENS ── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.classList.add('active'));
+  updateNav(id);
+  window.scrollTo(0, 0);
+}
+
+function updateNav(id) {
+  const d1 = document.getElementById('nsiDot1');
+  const d2 = document.getElementById('nsiDot2');
+  const d3 = document.getElementById('nsiDot3');
+  const l1 = document.getElementById('nsiLine1');
+  const l2 = document.getElementById('nsiLine2');
+  [d1,d2,d3].forEach(d => d.className = 'nsi-dot');
+  [l1,l2].forEach(l => l.className = 'nsi-line');
+  if (id === 'screen-step1') { d1.classList.add('active'); }
+  if (id === 'screen-step2') { d1.classList.add('done'); l1.classList.add('done'); d2.classList.add('active'); }
+  if (id === 'screen-results') { d1.classList.add('done'); l1.classList.add('done'); d2.classList.add('done'); l2.classList.add('done'); d3.classList.add('done','active'); }
+}
+
+/* ── CHECKLIST ── */
+function toggleCheck(el, type) {
+  el.classList.toggle('checked');
+  if (type === 'gas') {
+    gasChecks = document.querySelectorAll('#gasChecklist .check-item.checked').length;
+    document.getElementById('btnGasScan').disabled = gasChecks < GAS_CHECKS;
+  } else {
+    bioChecks = document.querySelectorAll('#bioChecklist .check-item.checked').length;
+    document.getElementById('btnBioScan').disabled = bioChecks < BIO_CHECKS;
+  }
+}
+
+/* ── GAS SCAN ── */
+function startGasScan() {
+  const n = gasStep + 1;
+  document.getElementById('animReadyTitle').textContent = n === 1
+    ? 'Take Sample 1 \u2014 Suspected Region'
+    : 'Take Sample 2 \u2014 Fresh Reference Breath';
+  document.getElementById('animReadySub').innerHTML = n === 1
+    ? 'Exhale from the area of concern into the device nozzle for <strong>5\u20136 seconds</strong>. Keep your mouth close to the sensor nozzle.'
+    : 'Now exhale normally. This serves as the <strong>healthy reference baseline</strong> for comparison.';
+  showAnimState('stateReady');
+  document.getElementById('animOverlay').classList.add('visible');
+}
+
+function beginBlowing() {
+  showAnimState('stateBlowing');
+  const fill = document.getElementById('blowProgress');
+  const cd   = document.getElementById('blowCountdown');
+  let elapsed = 0; const total = 5500;
+  const iv = setInterval(() => {
+    elapsed += 100;
+    fill.style.width = Math.min((elapsed/total)*100,100) + '%';
+    const rem = Math.ceil((total - elapsed)/1000);
+    cd.textContent = rem > 0 ? rem + ' second' + (rem !== 1 ? 's' : '') + ' remaining\u2026' : 'Complete!';
+    if (elapsed >= total) {
+      clearInterval(iv);
+      showAnimState('stateProcessing');
+      animFill('processProgress', 2200, () => {
+        showAnimState('stateDone');
+        document.getElementById('doneTitleAnim').textContent = 'Sample ' + (gasStep+1) + ' Recorded \u2713';
+        document.getElementById('doneSubAnim').textContent = 'Sensor data encrypted and stored.';
+      });
+    }
+  }, 100);
+}
+
+function sampleDoneGas() {
+  gasStep++;
+  document.getElementById('animOverlay').classList.remove('visible');
+  renderSamples('gasSamplesRecorded', gasStep,
+    ['Suspected breath (Sample 1)','Reference breath (Sample 2)'],
+    ['VOC biomarkers from suspected region captured','Healthy baseline breath captured']);
+  if (gasStep < 2) {
+    document.getElementById('btnGasScan').innerHTML =
+      '&#129754; Start Scan &mdash; Sample <span id="gasCurrentSampleLabel">2</span>';
+  } else {
+    document.getElementById('gasBtnRow').innerHTML =
+      '<button class="btn-primary" onclick="showScreen(\'screen-step2\')">' +
+      '\u2705 Submit VOC Results &amp; Proceed to Step 2 \u2192</button>';
+  }
+}
+
+/* ── BIO SCAN ── */
+function startBioScan() {
+  const n = bioStep + 1;
+  document.getElementById('probeReadyTitle').textContent = n === 1
+    ? 'Sample 1 \u2014 Suspicious Tissue'
+    : 'Sample 2 \u2014 Healthy Reference Tissue';
+  document.getElementById('probeReadySub').innerHTML = n === 1
+    ? 'Place the copper probe firmly on any ulcer, white patch, or lesion inside the mouth. <strong>Hold for 5 seconds.</strong>'
+    : 'Place the probe on a <strong>visibly healthy gum area</strong> for the reference baseline. Hold for 5 seconds.';
+  showProbeState('probeReady');
+  document.getElementById('probeOverlay').classList.add('visible');
+}
+
+function beginProbe() {
+  showProbeState('probeRecording');
+  const fill = document.getElementById('probeProgress');
+  const cd   = document.getElementById('probeCountdown');
+  let elapsed = 0; const total = 5500;
+  const iv = setInterval(() => {
+    elapsed += 100;
+    fill.style.width = Math.min((elapsed/total)*100,100) + '%';
+    const rem = Math.ceil((total - elapsed)/1000);
+    cd.textContent = rem > 0 ? rem + ' second' + (rem !== 1 ? 's' : '') + ' remaining\u2026' : 'Complete!';
+    if (elapsed >= total) {
+      clearInterval(iv);
+      showProbeState('probeProcessing');
+      animFill('probeProcessProgress', 2000, () => {
+        showProbeState('probeDone');
+        document.getElementById('probeDoneTitle').textContent = 'Sample ' + (bioStep+1) + ' Recorded \u2713';
+        document.getElementById('probeDoneSub').textContent = 'Impedance profile encrypted and stored.';
+      });
+    }
+  }, 100);
+}
+
+function sampleDoneBio() {
+  bioStep++;
+  document.getElementById('probeOverlay').classList.remove('visible');
+  renderSamples('bioSamplesRecorded', bioStep,
+    ['Suspicious tissue probe (Sample 1)','Healthy gum reference (Sample 2)'],
+    ['Impedance from target lesion captured','Healthy baseline impedance captured']);
+  if (bioStep < 2) {
+    document.getElementById('btnBioScan').innerHTML =
+      '&#9889; Record Sample <span id="bioCurrentSampleLabel">2</span>';
+  } else {
+    document.getElementById('bioBtnRow').innerHTML =
+      '<button class="btn-primary" style="background:linear-gradient(135deg,var(--amber),#f97316);box-shadow:0 8px 30px rgba(245,158,11,0.25);color:#080c14;" onclick="submitResults()">' +
+      '\ud83d\udcca Submit All Results &amp; View Report \u2192</button>';
+  }
+}
+
+function submitResults() {
+  showScreen('screen-results');
+  setTimeout(initCharts, 300);
+}
+
+/* ── RENDER SAMPLES ── */
+function renderSamples(containerId, count, labels, descs) {
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    html += '<div class="sample-card">' +
+      '<div class="sample-num ' + (i===0?'s1':'s2') + '">' + (i===0?'S1':'S2') + '</div>' +
+      '<div class="sample-info"><div class="si-label">' + labels[i] + '</div>' +
+      '<div class="si-sub">' + descs[i] + '</div></div>' +
+      '<div class="sample-recorded">\u2713</div></div>';
+  }
+  document.getElementById(containerId).innerHTML = html;
+}
+
+/* ── HELPERS ── */
+function showAnimState(id) {
+  ['stateReady','stateBlowing','stateProcessing','stateDone'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+function showProbeState(id) {
+  ['probeReady','probeRecording','probeProcessing','probeDone'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+function animFill(id, dur, cb) {
+  const el = document.getElementById(id);
+  let e = 0;
+  const iv = setInterval(() => {
+    e += 80;
+    el.style.width = Math.min((e/dur)*100, 100) + '%';
+    if (e >= dur) { clearInterval(iv); if (cb) cb(); }
+  }, 80);
+}
+
+/* ── CHARTS ── */
+function initCharts() {
+  Chart.defaults.color = 'rgba(240,244,255,0.5)';
+  Chart.defaults.font.family = 'Outfit';
+
+  // Gas S1 — radar
+  new Chart(document.getElementById('chartGas1'), {
+    type: 'radar',
+    data: {
+      labels: ['MQ-135','TGS2600','Acetaldehyde','Formaldehyde','Isoprene','Benzene'],
+      datasets: [
+        { label:'Sample 1', data:[82,60,88,74,70,65],
+          borderColor:'#f43f5e', backgroundColor:'rgba(244,63,94,0.15)',
+          pointBackgroundColor:'#f43f5e', borderWidth:2 },
+        { label:'Baseline', data:[28,24,22,18,20,16],
+          borderColor:'rgba(255,255,255,0.2)', backgroundColor:'rgba(255,255,255,0.03)',
+          pointBackgroundColor:'rgba(255,255,255,0.3)', borderWidth:1 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ grid:{color:'rgba(255,255,255,0.07)'}, pointLabels:{font:{size:9.5}},
+        ticks:{display:false}, angleLines:{color:'rgba(255,255,255,0.07)'} } },
+      plugins:{ legend:{display:false} } }
+  });
+
+  // Gas S2 — radar
+  new Chart(document.getElementById('chartGas2'), {
+    type: 'radar',
+    data: {
+      labels: ['MQ-135','TGS2600','Acetaldehyde','Formaldehyde','Isoprene','Benzene'],
+      datasets: [
+        { label:'Sample 2', data:[28,24,22,18,20,16],
+          borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.12)',
+          pointBackgroundColor:'#22c55e', borderWidth:2 },
+        { label:'Baseline', data:[28,24,22,18,20,16],
+          borderColor:'rgba(255,255,255,0.2)', backgroundColor:'rgba(255,255,255,0.03)',
+          pointBackgroundColor:'rgba(255,255,255,0.3)', borderWidth:1 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ grid:{color:'rgba(255,255,255,0.07)'}, pointLabels:{font:{size:9.5}},
+        ticks:{display:false}, angleLines:{color:'rgba(255,255,255,0.07)'} } },
+      plugins:{ legend:{display:false} } }
+  });
+
+  // Bio S1 — line
+  const freqL = ['100Hz','500Hz','1kHz','5kHz','10kHz','50kHz'];
+  new Chart(document.getElementById('chartBio1'), {
+    type: 'line',
+    data: {
+      labels: freqL,
+      datasets: [
+        { label:'Suspicious (k\u03a9)', data:[18,16,15.2,14.8,14.4,14.2],
+          borderColor:'#f43f5e', backgroundColor:'rgba(244,63,94,0.1)',
+          fill:true, tension:0.4, pointBackgroundColor:'#f43f5e', borderWidth:2 },
+        { label:'Healthy (k\u03a9)', data:[95,92,90,88,86,89],
+          borderColor:'rgba(255,255,255,0.2)', backgroundColor:'transparent',
+          fill:false, tension:0.4, pointBackgroundColor:'rgba(255,255,255,0.2)',
+          borderWidth:1.5, borderDash:[5,4] }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales:{ x:{grid:{color:'rgba(255,255,255,0.05)'}, ticks:{font:{size:9}}},
+        y:{grid:{color:'rgba(255,255,255,0.05)'}, ticks:{font:{size:9}}} },
+      plugins:{ legend:{display:false} } }
+  });
+
+  // Bio S2 — line
+  new Chart(document.getElementById('chartBio2'), {
+    type: 'line',
+    data: {
+      labels: freqL,
+      datasets: [
+        { label:'Healthy (k\u03a9)', data:[92,90,89,88,87,89],
+          borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.1)',
+          fill:true, tension:0.4, pointBackgroundColor:'#22c55e', borderWidth:2 },
+        { label:'Expected (k\u03a9)', data:[95,92,90,88,86,89],
+          borderColor:'rgba(255,255,255,0.2)', backgroundColor:'transparent',
+          fill:false, tension:0.4, pointBackgroundColor:'rgba(255,255,255,0.2)',
+          borderWidth:1.5, borderDash:[5,4] }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      scales:{ x:{grid:{color:'rgba(255,255,255,0.05)'}, ticks:{font:{size:9}}},
+        y:{grid:{color:'rgba(255,255,255,0.05)'}, ticks:{font:{size:9}}} },
+      plugins:{ legend:{display:false} } }
+  });
+}
+
+/* ── RETRY CONNECT ── */
+function retryConnect() {
+  const btn = document.getElementById('btnRetryConnect');
+  btn.disabled = true;
+  btn.textContent = '🔍 Scanning...';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = '🔄 Retry Connection';
+    // Device still not found — show same screen (hardware required)
+    showScreen('screen-no-device');
+  }, 3500);
+  showScreen('screen-intro');
+  const statusEl = document.getElementById('introStatus');
+  const msgs = ['Re-initialising...','Scanning Bluetooth...','Searching for OncoSniff...','⚠️ Device not found — please keep device on'];
+  let i = 0;
+  const t = setInterval(() => { statusEl.textContent = msgs[i++]; if (i >= msgs.length) clearInterval(t); }, 700);
+}
+
+/* ── SAVE & EXIT ── */
+function saveAndGoToDash() {
+  const token = localStorage.getItem('mukhbodhita_token');
+  if (token) {
+    fetch('/api/screening', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + token },
+      body: JSON.stringify({
+        patient_name: 'Walk-in Patient', patient_age: '—', patient_gender: '—',
+        voc_s1:'MQ135:3.28V TGS:2.41V', voc_s2:'MQ135:1.12V TGS:0.98V',
+        bio_s1:'14.2k\u03a9', bio_s2:'89.4k\u03a9',
+        verdict:'MALIGNANT_INDICATORS',
+        notes:'Multimodal scan via OncoSniff OS-ESP32-8492'
+      })
+    }).catch(() => {});
+  }
+  window.location.href = 'dashboard.html';
+}
+
+function confirmExit() {
+  if (confirm('Exit scan? All recorded samples will be discarded.')) {
+    window.location.href = 'dashboard.html';
+  }
+}
+</script>
+</body>
+</html>

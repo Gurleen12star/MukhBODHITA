@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MukhBODHITA — Sign In / Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* AUTH-SPECIFIC STYLES */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .auth-page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* LEFT PANEL */
+    .auth-left {
+      background: linear-gradient(145deg, #050e1a 0%, #0a1628 50%, #0d1f3c 100%);
+      padding: 60px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    [data-theme="light"] .auth-left {
+      background: linear-gradient(145deg, #e8f4f8 0%, #d4eaf5 50%, #c8e0f0 100%);
+    }
+    .auth-left-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .auth-left-orb.o1 {
+      width: 340px; height: 340px;
+      background: radial-gradient(circle, rgba(0,229,204,0.18), transparent 70%);
+      top: -80px; left: -80px;
+    }
+    .auth-left-orb.o2 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(124,58,237,0.2), transparent 70%);
+      bottom: 60px; right: -60px;
+    }
+    .auth-left-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      position: relative;
+      z-index: 1;
+    }
+    .auth-left-logo .logo-text { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+    .auth-left-logo .logo-accent { background: var(--grad-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .auth-left-content { position: relative; z-index: 1; }
+    .auth-left-headline {
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .auth-left-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      max-width: 380px;
+    }
+    .auth-feature-list { display: flex; flex-direction: column; gap: 14px; }
+    .auth-feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+    [data-theme="light"] .auth-feature { background: rgba(255,255,255,0.6); border-color: rgba(0,0,0,0.08); }
+    .auth-feature-icon { font-size: 1.5rem; width: 40px; text-align: center; flex-shrink: 0; }
+    .auth-feature-text h5 { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+    .auth-feature-text p  { font-size: 0.78rem; color: var(--text-muted); }
+
+    .auth-left-footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .acc-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--grad-primary);
+      border-radius: 99px;
+    }
+    .acc-badge-num { font-size: 1.2rem; font-weight: 900; color: #030712; }
+    .acc-badge-lbl { font-size: 0.72rem; font-weight: 700; color: #030712; }
+
+    /* RIGHT PANEL */
+    .auth-right {
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      overflow-y: auto;
+    }
+    [data-theme="light"] .auth-right { background: #ffffff; }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Back link */
+    .auth-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 28px;
+      transition: color 0.2s;
+    }
+    .auth-back:hover { color: var(--teal); }
+
+    /* Tab Toggle: Login / Sign Up */
+    .auth-tab-row {
+      display: flex;
+      background: var(--bg-card2);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 28px;
+      border: 1px solid var(--border);
+    }
+    [data-theme="light"] .auth-tab-row { background: #f3f4f6; border-color: #e5e7eb; }
+    .auth-tab {
+      flex: 1;
+      padding: 11px;
+      border-radius: 11px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      border: none;
+      background: none;
+      font-family: var(--font-main);
+    }
+    .auth-tab.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    [data-theme="light"] .auth-tab.active { background: #ffffff; color: #111827; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+    .auth-title { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
+    .auth-sub   { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* Role Selector */
+    .role-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; display: block; }
+    .role-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .role-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 8px;
+      border: 2px solid var(--border-dim);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.02);
+    }
+    [data-theme="light"] .role-card { background: #f9fafb; border-color: #e5e7eb; }
+    .role-card:hover { border-color: var(--teal); background: var(--teal-glow); }
+    .role-card.active-role {
+      border-color: var(--teal);
+      background: var(--teal-glow);
+      box-shadow: 0 0 0 3px rgba(0,229,204,0.12);
+    }
+    .role-card.active-role .role-card-name { color: var(--teal); }
+    .role-emoji { font-size: 1.8rem; }
+    .role-card-name { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-align: center; line-height: 1.3; }
+
+    /* Form */
+    .auth-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+    .form-input {
+      background: var(--bg-deep);
+      border: 1.5px solid var(--border-dim);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    [data-theme="light"] .form-input { background: #f9fafb; border-color: #d1d5db; color: #111827; }
+    .form-input::placeholder { color: var(--text-dim); }
+    .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,229,204,0.1); }
+    [data-theme="light"] .form-input:focus { box-shadow: 0 0 0 3px rgba(0,229,204,0.15); }
+    .pass-wrap { position: relative; }
+    .pass-wrap .form-input { padding-right: 48px; }
+    .pass-eye { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.5; transition: opacity 0.2s; }
+    .pass-eye:hover { opacity: 1; }
+    .form-row-split { display: flex; justify-content: space-between; align-items: center; }
+    .check-label { display: flex; align-items: center; gap: 7px; font-size: 0.82rem; color: var(--text-muted); cursor: pointer; }
+    .check-label input { accent-color: var(--teal); width: 15px; height: 15px; }
+    .form-link { font-size: 0.82rem; color: var(--teal); font-weight: 600; }
+    .form-link:hover { text-decoration: underline; }
+
+    .submit-btn {
+      background: var(--grad-primary);
+      color: #030712;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: var(--font-main);
+      margin-top: 4px;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,229,204,0.35); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn.loading { opacity: 0.7; pointer-events: none; }
+
+    .divider-row { display: flex; align-items: center; gap: 12px; margin: 4px 0; }
+    .divider-line { flex: 1; height: 1px; background: var(--border-dim); }
+    .divider-text { font-size: 0.75rem; color: var(--text-dim); }
+
+    .social-btns { display: flex; gap: 10px; }
+    .social-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px;
+      border: 1.5px solid var(--border-dim);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.2s;
+      font-family: var(--font-main);
+    }
+    [data-theme="light"] .social-btn { background: #f9fafb; border-color: #d1d5db; color: #374151; }
+    .social-btn:hover { border-color: var(--teal); color: var(--text-primary); }
+
+    .auth-switch-row { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--text-muted); }
+    .auth-switch-row a { color: var(--teal); font-weight: 700; cursor: pointer; }
+    .auth-switch-row a:hover { text-decoration: underline; }
+
+    .demo-hint {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(0,229,204,0.06);
+      border: 1px solid rgba(0,229,204,0.2);
+      border-radius: 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    [data-theme="light"] .demo-hint { background: rgba(0,229,204,0.05); }
+    .demo-hint strong { color: var(--teal); }
+
+    /* Theme toggle in auth */
+    .auth-theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .auth-theme-toggle:hover { border-color: var(--teal); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { padding: 32px 20px; align-items: flex-start; padding-top: 80px; }
+      .auth-theme-toggle { top: 16px; right: 16px; }
+    }
+    @media (max-width: 480px) {
+      .role-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .role-emoji { font-size: 1.4rem; }
+      .role-card-name { font-size: 0.68rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Theme Toggle -->
+<button class="auth-theme-toggle" onclick="toggleTheme()" id="auth-theme-toggle" aria-label="Toggle theme">☀️</button>
+
+<div class="auth-page">
+
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="auth-left-orb o1"></div>
+    <div class="auth-left-orb o2"></div>
+
+    <a href="index.html" class="auth-left-logo">
+      <svg width="32" height="32" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="15" stroke="url(#alg)" stroke-width="2"/>
+        <path d="M8 17Q12.5 8 17 17Q21.5 26 26 17" stroke="url(#alg)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <defs><linearGradient id="alg" x1="0" y1="0" x2="34" y2="34"><stop offset="0%" stop-color="#00e5cc"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+      </svg>
+      <span class="logo-text">Mukh<span class="logo-accent">BODHITA</span></span>
+    </a>
+
+    <div class="auth-left-content">
+      <h2 class="auth-left-headline">Early Detection Saves Lives.<br/><span class="gradient-text">Start Screening Today.</span></h2>
+      <p class="auth-left-sub">Join healthcare workers and citizens across India using MukhBODHITA's 97% accurate oral cancer screening platform.</p>
+
+      <div class="auth-feature-list">
+        <div class="auth-feature">
+          <span class="auth-feature-icon">🎯</span>
+          <div class="auth-feature-text">
+            <h5>97% Validated Accuracy</h5>
+            <p>Late-fusion edge AI trained on 10,000+ clinical data points</p>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">📡</span>
+          <div class="auth-feature-text">
+            <h5>100% Offline Operation</h5>
+            <p>No internet needed — works in the most remote Indian villages</p>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">🌐</span>
+          <div class="auth-feature-text">
+            <h5>12 Indian Languages</h5>
+            <p>Full voice alerts and UI in Hindi, Tamil, Telugu, Kannada & more</p>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <span class="auth-feature-icon">🏥</span>
+          <div class="auth-feature-text">
+            <h5>ABDM Compliant</h5>
+            <p>Auto-generates QR referral codes routed to nearest cancer institute</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-left-footer">
+      <div class="acc-badge">
+        <span class="acc-badge-num">97%</span>
+        <span class="acc-badge-lbl">Accuracy</span>
+      </div>
+      <span style="font-size:0.82rem; color:var(--text-muted);">Validated across 10,000+ multi-modal screening sessions</span>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-card">
+
+      <a href="index.html" class="auth-back">← Back to MukhBODHITA</a>
+
+      <!-- Login / Sign Up toggle -->
+      <div class="auth-tab-row" id="auth-tab-row">
+        <button class="auth-tab active" id="tab-login"  onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab"        id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <div id="login-section">
+        <h2 class="auth-title" id="login-title">Welcome back</h2>
+        <p class="auth-sub"   id="login-sub">Sign in to your MukhBODHITA account</p>
+
+        <!-- Role Selector -->
+        <span class="role-label">I am a</span>
+        <div class="role-cards" id="login-roles">
+          <div class="role-card active-role" onclick="selectRole('login','asha')" id="lr-asha">
+            <span class="role-emoji">🌾</span>
+            <span class="role-card-name">ASHA Worker</span>
+          </div>
+          <div class="role-card" onclick="selectRole('login','home')" id="lr-home">
+            <span class="role-emoji">🏠</span>
+            <span class="role-card-name">Home Citizen</span>
+          </div>
+          <div class="role-card" onclick="selectRole('login','hospital')" id="lr-hospital">
+            <span class="role-emoji">🏥</span>
+            <span class="role-card-name">Hospital OPD</span>
+          </div>
+        </div>
+
+        <form class="auth-form" id="login-form" onsubmit="doLogin(event)">
+          <div class="form-group" id="login-id-group">
+            <label class="form-label" for="login-id" id="login-id-label">ASHA Worker ID</label>
+            <input type="text" id="login-id" class="form-input" placeholder="e.g. ASHA-RJ-2024-0019" autocomplete="username" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-pass">Password</label>
+            <div class="pass-wrap">
+              <input type="password" id="login-pass" class="form-input" placeholder="Enter your password" autocomplete="current-password" required/>
+              <button type="button" class="pass-eye" onclick="togglePassVis('login-pass',this)">👁️</button>
+            </div>
+          </div>
+          <div class="form-row-split">
+            <label class="check-label"><input type="checkbox" id="offline-chk"/> <span>Offline Mode</span></label>
+            <a href="#" class="form-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="submit-btn" id="login-submit">Sign In to Dashboard</button>
+        </form>
+
+        <div class="divider-row"><div class="divider-line"></div><span class="divider-text">or continue with</span><div class="divider-line"></div></div>
+        <div class="social-btns">
+          <button class="social-btn" onclick="showToast('Google login coming soon','info')">🔵 Google</button>
+          <button class="social-btn" onclick="showToast('Aadhaar login coming soon','info')">🇮🇳 Aadhaar</button>
+        </div>
+
+        <div class="auth-switch-row">Don't have an account? <a onclick="switchTab('signup')">Sign Up Free</a></div>
+        <div class="demo-hint" style="background:rgba(0,229,204,0.08);border:1.5px solid var(--teal);padding:14px;border-radius:12px;margin-top:20px;">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--teal);margin-bottom:6px;">⚡ Universal Demo Credentials</div>
+          <div style="font-size:0.82rem;color:var(--text-primary);margin-bottom:10px;">
+            User ID / Phone: <strong style="color:var(--teal);letter-spacing:0.5px;">demo</strong> &nbsp;|&nbsp; 
+            Password: <strong style="color:var(--teal);letter-spacing:0.5px;">demo123</strong>
+          </div>
+          <button type="button" onclick="autoFillDemo()" style="background:var(--grad-primary);color:#030712;padding:8px 18px;border-radius:99px;font-size:0.8rem;font-weight:800;cursor:pointer;width:100%;transition:0.2s;box-shadow:0 4px 14px rgba(0,229,204,0.25);">⚡ 1-Click Auto-Fill & Sign In</button>
+        </div>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="signup-section" style="display:none">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-sub">Join MukhBODHITA and start screening</p>
+
+        <!-- Role Selector -->
+        <span class="role-label">I want to register as</span>
+        <div class="role-cards" id="signup-roles">
+          <div class="role-card active-role" onclick="selectRole('signup','asha')" id="sr-asha">
+            <span class="role-emoji">🌾</span>
+            <span class="role-card-name">ASHA Worker</span>
+          </div>
+          <div class="role-card" onclick="selectRole('signup','home')" id="sr-home">
+            <span class="role-emoji">🏠</span>
+            <span class="role-card-name">Home Citizen</span>
+          </div>
+          <div class="role-card" onclick="selectRole('signup','hospital')" id="sr-hospital">
+            <span class="role-emoji">🏥</span>
+            <span class="role-card-name">Hospital OPD</span>
+          </div>
+        </div>
+
+        <form class="auth-form" id="signup-form" onsubmit="doSignup(event)">
+          <div class="form-group">
+            <label class="form-label" for="su-name">Full Name</label>
+            <input type="text" id="su-name" class="form-input" placeholder="e.g. Priya Sharma" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="su-phone">Mobile Number</label>
+            <input type="tel" id="su-phone" class="form-input" placeholder="+91 98765 43210" required/>
+          </div>
+          <div class="form-group" id="su-id-group" style="display:block">
+            <label class="form-label" for="su-id" id="su-id-label">ASHA Worker ID</label>
+            <input type="text" id="su-id" class="form-input" placeholder="Issued by NHM"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="su-state">State</label>
+            <input type="text" id="su-state" class="form-input" placeholder="e.g. Rajasthan"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="su-pass">Password</label>
+            <div class="pass-wrap">
+              <input type="password" id="su-pass" class="form-input" placeholder="Create a strong password" required/>
+              <button type="button" class="pass-eye" onclick="togglePassVis('su-pass',this)">👁️</button>
+            </div>
+          </div>
+          <label class="check-label" style="margin-top:4px;">
+            <input type="checkbox" required/>
+            <span>I agree to the <a href="#" class="form-link">Terms of Service</a> & <a href="#" class="form-link">Privacy Policy</a></span>
+          </label>
+          <button type="submit" class="submit-btn" id="signup-submit">Create Account</button>
+        </form>
+
+        <div class="divider-row"><div class="divider-line"></div><span class="divider-text">or sign up with</span><div class="divider-line"></div></div>
+        <div class="social-btns">
+          <button class="social-btn" onclick="showToast('Google signup coming soon','info')">🔵 Google</button>
+          <button class="social-btn" onclick="showToast('Aadhaar login coming soon','info')">🇮🇳 Aadhaar</button>
+        </div>
+
+        <div class="auth-switch-row">Already have an account? <a onclick="switchTab('login')">Sign In</a></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+const API = (window.location.protocol.startsWith('http') && window.location.port)
+  ? `${window.location.origin}/api`
+  : 'http://localhost:3001/api';
+
+// ── Theme ──
+function getTheme() { return localStorage.getItem('mb-theme') || 'dark'; }
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('auth-theme-toggle');
+  if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('mb-theme', t);
+}
+function toggleTheme() { applyTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
+applyTheme(getTheme());
+
+// Check if already logged in: show switcher banner instead of blocking
+const existingUser = localStorage.getItem('mb-user');
+const switchMode = new URLSearchParams(window.location.search).get('switch');
+if (existingUser && !switchMode) {
+  try {
+    const u = JSON.parse(existingUser);
+    window.addEventListener('DOMContentLoaded', () => {
+      const authCard = document.querySelector('.auth-card');
+      if (authCard) {
+        const box = document.createElement('div');
+        box.className = 'demo-hint';
+        box.style.marginBottom = '20px';
+        box.style.border = '1px solid var(--teal)';
+        box.innerHTML = `Signed in as <strong>${u.name}</strong> (${u.role.toUpperCase()}) &middot; <a href="index.html" style="color:var(--teal);font-weight:700;text-decoration:none">Go to Dashboard &rarr;</a> or <a href="#" id="switch-account-btn" style="color:var(--text-muted);text-decoration:underline;margin-left:8px">Switch Account</a>`;
+        authCard.prepend(box);
+        document.getElementById('switch-account-btn')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('mb-token');
+          localStorage.removeItem('mb-user');
+          box.remove();
+          showToast('Signed out. You can now log in with another account.', 'info');
+        });
+      }
+    });
+  } catch(e){}
+}
+
+// Pre-select role from URL param
+const urlRole = new URLSearchParams(window.location.search).get('role');
+let currentLoginRole  = urlRole || 'asha';
+let currentSignupRole = urlRole || 'asha';
+if (urlRole) {
+  setTimeout(() => { selectRole('login', urlRole); selectRole('signup', urlRole); }, 50);
+}
+
+// ── Tabs ──
+function switchTab(tab) {
+  document.getElementById('login-section').style.display  = tab === 'login'  ? 'block' : 'none';
+  document.getElementById('signup-section').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+}
+
+// ── Role Selection ──
+const loginRoleConfig = {
+  asha:     { label: 'ASHA Worker ID', placeholder: 'e.g. ASHA-RJ-2024-0019', type: 'text' },
+  home:     { label: 'Phone / Email',  placeholder: '+91 98765 43210', type: 'text' },
+  hospital: { label: 'Hospital / NPI Code', placeholder: 'e.g. HOSP-DL-0042', type: 'text' },
+};
+const signupIdConfig = {
+  asha:     { show: true,  label: 'ASHA Worker ID (Issued by NHM)', placeholder: 'Issued by NHM' },
+  home:     { show: false },
+  hospital: { show: true,  label: 'Hospital Registration Number', placeholder: 'e.g. HOSP-DL-0042' },
+};
+
+function selectRole(form, role) {
+  const prefix = form === 'login' ? 'lr' : 'sr';
+  ['asha','home','hospital'].forEach(r => {
+    document.getElementById(`${prefix}-${r}`)?.classList.toggle('active-role', r === role);
+  });
+  if (form === 'login') {
+    currentLoginRole = role;
+    const cfg = loginRoleConfig[role];
+    document.getElementById('login-id-label').textContent = cfg.label;
+    document.getElementById('login-id').placeholder = cfg.placeholder;
+    document.getElementById('login-id').type = cfg.type;
+  }
+  if (form === 'signup') {
+    currentSignupRole = role;
+    const cfg = signupIdConfig[role];
+    const grp = document.getElementById('su-id-group');
+    grp.style.display = cfg.show ? 'block' : 'none';
+    if (cfg.show) {
+      document.getElementById('su-id-label').textContent = cfg.label;
+      document.getElementById('su-id').placeholder = cfg.placeholder;
+    }
+  }
+}
+
+// ── Password visibility ──
+function togglePassVis(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+}
+
+// ── One-Click Demo Login Helper ──
+function autoFillDemo() {
+  selectRole('login', 'asha');
+  document.getElementById('login-id').value = 'demo';
+  document.getElementById('login-pass').value = 'demo123';
+  showToast('Credentials filled! Signing in…', 'info');
+  setTimeout(() => {
+    document.getElementById('login-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  }, 250);
+}
+
+// ── LOGIN (real API) ──
+async function doLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-submit');
+  const identifier = document.getElementById('login-id').value.trim();
+  const password   = document.getElementById('login-pass').value;
+
+  btn.classList.add('loading'); btn.textContent = 'Authenticating…';
+
+  try {
+    const res  = await fetch(`${API}/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password, role: currentLoginRole }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+
+    // Store token & user info
+    localStorage.setItem('mb-token', data.token);
+    localStorage.setItem('mb-user',  JSON.stringify(data.user));
+    showToast('✅ Welcome back, ' + data.user.name + '!', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+
+  } catch (err) {
+    showToast('❌ ' + err.message, 'error');
+    btn.classList.remove('loading'); btn.textContent = 'Sign In to Dashboard';
+  }
+}
+
+// ── SIGNUP (real API) ──
+async function doSignup(e) {
+  e.preventDefault();
+  const btn = document.getElementById('signup-submit');
+  const name      = document.getElementById('su-name').value.trim();
+  const phone     = document.getElementById('su-phone').value.trim();
+  const worker_id = document.getElementById('su-id')?.value.trim() || '';
+  const state     = document.getElementById('su-state').value.trim();
+  const password  = document.getElementById('su-pass').value;
+
+  if (password.length < 6) { showToast('❌ Password must be at least 6 characters', 'error'); return; }
+
+  btn.classList.add('loading'); btn.textContent = 'Creating account…';
+
+  try {
+    const body = { name, phone, role: currentSignupRole, state, password };
+    if (worker_id) body.worker_id = worker_id;
+
+    const res  = await fetch(`${API}/register`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+    localStorage.setItem('mb-token', data.token);
+    localStorage.setItem('mb-user',  JSON.stringify(data.user));
+    showToast('✅ Account created! Welcome, ' + data.user.name + '!', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+
+  } catch (err) {
+    showToast('❌ ' + err.message, 'error');
+    btn.classList.remove('loading'); btn.textContent = 'Create Account';
+  }
+}
+
+// ── Toast ──
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(40px)'; t.style.transition = '0.3s'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+</script>
+</body>
+</html>
