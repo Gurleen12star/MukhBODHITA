@@ -494,12 +494,12 @@ Cohen's Kappa:     0.942
 - [x] Multilingual support (5 Indian languages)
 - [x] Dashboard with screening history
 - [x] ML model training pipeline (VOC CNN + BIO RF)
-- [ ] v1.1 — Live BLE GATT data stream integration
-- [ ] v1.2 — PWA offline service worker
-- [ ] v1.3 — PDF clinical report generation
-- [ ] v2.0 — Cloud sync + National Cancer Grid API integration
-- [ ] v2.1 — Image-based screening (oral mucosal imaging CNN)
-- [ ] v3.0 — NHA Ayushman Bharat integration
+- [x] v1.1 — Live BLE GATT data stream integration
+- [x] v1.2 — PWA offline service worker
+- [x] v1.3 — PDF clinical report generation
+- [x] v2.0 — Cloud sync + National Cancer Grid API integration
+- [x] v2.1 — Image-based screening (oral mucosal imaging CNN)
+- [x] v3.0 — NHA Ayushman Bharat integration
 
 ---
 
