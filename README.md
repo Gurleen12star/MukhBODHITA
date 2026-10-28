@@ -59,7 +59,7 @@ It combines two independent biomedical sensing modalities — **VOC breath analy
 | Modalities | VOC Gas Sensors + Bio-Impedance Spectroscopy |
 | AI Model | CNN + Random Forest Late-Fusion Ensemble |
 | Accuracy | **97.3%** on held-out test set |
-| Device Cost | ~₹2,400 (prototype hardware) |
+| Device Cost | ~₹350 (prototype hardware) |
 | Target Users | ASHA workers, PHCs, rural health clinics |
 | Languages | English, Hindi, Punjabi, Tamil, Telugu |
 | Connectivity | Bluetooth LE + Offline-first SQLite |
