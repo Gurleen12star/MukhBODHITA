@@ -24,10 +24,12 @@ const fs       = require('fs');
 const PORT       = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'mukhbodhita_dev_secret_2026';
 const SALT       = 10;
-const DATA_DIR   = path.join(__dirname, 'data');
+// On Vercel, use /tmp (writable); locally use data/
+const IS_VERCEL  = !!process.env.VERCEL;
+const DATA_DIR   = IS_VERCEL ? '/tmp' : path.join(__dirname, 'data');
 const DB_PATH    = path.join(DATA_DIR, 'mukhbodhita.db');
 
-fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!IS_VERCEL) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 // ── DB helpers ──
 const db = new sqlite3.Database(DB_PATH, err => {
@@ -229,12 +231,20 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0',
 app.get('*', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // ── Start ──
-initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`\n🚀 MukhBODHITA running at http://localhost:${PORT}`);
-    console.log(`   Demo login: ASHA-DEMO-001 / demo123`);
-    console.log(`   Admin API: GET http://localhost:${PORT}/api/users (with token)\n`);
-  });
-}).catch(err => { console.error('DB init failed:', err); process.exit(1); });
+// On Vercel: export the app after DB init; do NOT call app.listen()
+// Locally: init DB then start the HTTP server
+if (IS_VERCEL) {
+  // Vercel invokes initDB on each cold start
+  initDB().catch(err => console.error('DB init failed:', err));
+  module.exports = app;
+} else {
+  initDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`\n🚀 MukhBODHITA running at http://localhost:${PORT}`);
+      console.log(`   Demo login: ASHA-DEMO-001 / demo123`);
+      console.log(`   Admin API: GET http://localhost:${PORT}/api/users (with token)\n`);
+    });
+  }).catch(err => { console.error('DB init failed:', err); process.exit(1); });
 
-process.on('SIGINT', () => { db.close(); console.log('\nDB closed. Goodbye!'); process.exit(0); });
+  process.on('SIGINT', () => { db.close(); console.log('\nDB closed. Goodbye!'); process.exit(0); });
+}
