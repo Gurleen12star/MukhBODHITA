@@ -22,6 +22,8 @@
 
 </div>
 
+
+
 ---
 
 ## Table of Contents
@@ -178,6 +180,13 @@ Both modalities are independently classified, then fused via a **late-fusion ens
 | Copper-tip Probe | Bio-impedance measurement electrode |
 | LiPo 3.7V 2200mAh | Rechargeable power source |
 
+<img width="1436" height="748" alt="image" src="https://github.com/user-attachments/assets/9e573a57-e65d-4b1b-b6b4-feb4a4cf2d45" />
+
+<img width="1836" height="1028" alt="image" src="https://github.com/user-attachments/assets/bdc03e5b-ed4d-4acc-807b-4dfa8b537250" />
+
+
+
+
 ---
 
 ## ML Model
@@ -213,6 +222,10 @@ Overall Test Accuracy: 97.3%  |  Sensitivity: 96.8%  |  Specificity: 97.7%
 | Specificity | 98.4% | 96.5% | **97.7%** |
 | AUC-ROC | 0.987 | 0.971 | **0.991** |
 | F1-Score | 0.963 | 0.961 | **0.972** |
+<img width="1158" height="864" alt="image" src="https://github.com/user-attachments/assets/63806947-eddf-43d7-bcf8-1f4d8c2e1631" />
+
+<img width="2008" height="1016" alt="image" src="https://github.com/user-attachments/assets/fd35b8c3-a908-43e3-9637-05e866cb5508" />
+
 
 ---
 
